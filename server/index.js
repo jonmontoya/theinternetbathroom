@@ -30,7 +30,7 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-      const assets = ENV === 'development' ? 'http://localhost:8080/bundle.js' : 'bundle.js';
+      const assets = ENV === 'development' ? 'http://localhost:8080/bundle.js' : 'asssets/bundle.js';
       return reply(`
         <!DOCTYPE html>
         <html>
