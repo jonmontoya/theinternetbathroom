@@ -1,0 +1,8 @@
+module.exports = {
+  IMAGE_WIDTH: 313,
+  IMAGE_HEIGHT: 190,
+  WALL_WIDTH: 242,
+  WALL_HEIGHT: 151,
+  WALL_X_OFFSET: 40,
+  WALL_Y_OFFSET: 5,
+};

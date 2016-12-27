@@ -1,0 +1,44 @@
+{
+  "name": "theinternetbathroom",
+  "version": "1.0.0",
+  "description": "theinternetbathroom.com",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./server/index.js",
+    "lint": "./node_modules/.bin/eslint ./src",
+    "build": "rm -rf ./dist/* && cp ./src/index.html ./dist/ && ./node_modules/.bin/webpack --progress --colors",
+    "deploy": "./node_modules/.bin/s3-deploy './dist/**' --cwd './dist/' --bucket theinternetbathroom.com"
+  },
+  "author": "Jonathan Montoya",
+  "email": "lonlazarus@gmail.com",
+  "license": "ISC",
+  "private": true,
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-eslint": "^6.1.2",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2016": "^6.16.0",
+    "css-loader": "^0.26.1",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
+    "image-webpack-loader": "^3.1.0",
+    "node-sass": "^4.0.0",
+    "sass-loader": "^4.1.0",
+    "socket.io-client": "^1.7.2",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "canvas": "^1.6.2",
+    "hapi": "^16.0.2",
+    "inert": "^4.0.4",
+    "jsonschema": "^1.1.1",
+    "s3-deploy": "^0.7.3",
+    "socket.io": "^1.7.2",
+    "socket.io-redis": "^2.0.1"
+  }
+}

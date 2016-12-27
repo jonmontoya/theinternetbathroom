@@ -1,0 +1,10 @@
+/node_modules
+npm-debug.log
+
+# distribution assets
+/dist/*
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

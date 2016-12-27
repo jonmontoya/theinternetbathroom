@@ -1,0 +1,29 @@
+body {
+  background-color: black;
+  margin: 0;
+  overflow: hidden;
+}
+
+#app {
+  align-items: center;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+}
+
+@keyframes backgroundAnimation {
+  0% {transform: rotate(0deg)}
+  100% {transform: rotate(360deg)}
+}
+
+#app_background {
+  animation: backgroundAnimation 480s linear infinite;
+  display: block;
+  position: absolute;
+  z-index: -1;
+}
+
+#graffiti_draw, #graffiti {
+  position: absolute;
+  border: solid;
+}
