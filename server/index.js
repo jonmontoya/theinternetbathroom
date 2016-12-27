@@ -1,8 +1,9 @@
+const { env, assetPath } = require('../config');
+
 const PORT = 8081;
-const ENV = process.env.NODE_ENV || 'development';
 
 // serve app from webpack dev server
-if (ENV === 'development') require('./devServer');
+if (env === 'development') require('./devServer');
 
 const Hapi = require('hapi');
 
@@ -30,7 +31,6 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-      const assets = ENV === 'development' ? 'http://localhost:8080/bundle.js' : 'asssets/bundle.js';
       return reply(`
         <!DOCTYPE html>
         <html>
@@ -46,7 +46,7 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
               <canvas id="app_canvas"></canvas>
             </div>
           </div>
-          <script src="${assets}"></script>
+          <script src="${assetPath}bundle.js"></script>
         </body>
         </html>
       `);

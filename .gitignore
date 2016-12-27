@@ -2,7 +2,7 @@
 npm-debug.log
 
 # distribution assets
-/dist/*
+/assets/*
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

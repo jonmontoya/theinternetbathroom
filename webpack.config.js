@@ -1,4 +1,5 @@
-const path = require("path");
+const path = require('path');
+const { assetPath } = require('./config');
 
 module.exports = {
   entry: {
@@ -6,7 +7,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "assets"),
-    publicPath: "/assets/",
+    publicPath: assetPath,
     filename: "bundle.js"
   },
   module: {

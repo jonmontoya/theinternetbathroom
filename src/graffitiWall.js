@@ -14,7 +14,7 @@ module.exports = class GraffitiWall {
     this.handleDown = this.handleDown.bind(this);
 
     this.setSize(width, height, scale);
-    this.primeCanvas(imgUrl);
+    if (imgUrl) this.primeCanvas(imgUrl);
     this.bindWS();
     this.graffitiCanvas.canvas.addEventListener('mousedown', this.handleDown);
     this.graffitiCanvas.canvas.addEventListener('mouseup', this.handleUp);
