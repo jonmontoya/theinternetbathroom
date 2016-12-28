@@ -20,8 +20,29 @@ body {
   animation: backgroundAnimation 480s linear infinite;
   display: block;
   position: absolute;
+  z-index: -2;
+}
+
+#graffiti {
+  z-index: -1;
 }
 
 #graffiti_draw, #graffiti {
   position: absolute;
+}
+
+#bathroom_foreground {
+  background-image: url("../img/bathroom_foreground.png");
+}
+
+#bathroom_background {
+  background-image: url("../img/bathroom_background.png");
+  z-index: -2;
+}
+
+#bathroom_foreground, #bathroom_background {
+  background-size: cover;
+  height: inherit;
+  position: absolute;
+  width: inherit;
 }

@@ -42,8 +42,9 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
           <img id="app_background"></img>
           <div id="app">
             <div id="app_canvas_wrapper">
+              <div id="bathroom_background"></div>
               <canvas id="graffiti"></canvas>
-              <canvas id="overlay_canvas"></canvas>
+              <div id="bathroom_foreground"></div>
               <canvas id="graffiti_draw"></canvas>
             </div>
           </div>
