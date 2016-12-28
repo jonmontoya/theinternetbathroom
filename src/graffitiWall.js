@@ -50,10 +50,6 @@ module.exports = class GraffitiWall {
   }
 
   handleMove(event) {
-    // this.graffitiCanvas.context.lineTo(event.offsetX, event.offsetY);
-    // this.graffitiCanvas.context.moveTo(event.offsetX, event.offsetY);
-    // this.graffitiCanvas.context.stroke();
-
     this.ws.emit('stroke', {
       color: this.color,
       stroke: [

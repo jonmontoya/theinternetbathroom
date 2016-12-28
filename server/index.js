@@ -31,7 +31,6 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
     method: 'GET',
     path: '/',
     handler: function (request, reply) {
-      const bundleSrc = env === 'development' ? 'http://localhost:8080/assets/bundle.js' : `${assetPath}bundle.js`;
       return reply(`
         <!DOCTYPE html>
         <html>
@@ -44,10 +43,10 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
           <div id="app">
             <div id="app_canvas_wrapper">
               <canvas id="graffiti"></canvas>
-              <canvas id="app_canvas"></canvas>
+              <canvas id="overlay_canvas"></canvas>
             </div>
           </div>
-          <script src="${bundleSrc}"></script>
+          <script src="${assetPath}bundle.js"></script>
         </body>
         </html>
       `);

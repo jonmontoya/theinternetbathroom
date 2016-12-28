@@ -7,7 +7,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "assets"),
-    publicPath: 'http://theinternetbathroom-assets.s3.amazonaws.com/',
+    publicPath: assetPath,
     filename: "bundle.js"
   },
   module: {

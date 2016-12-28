@@ -1,10 +1,17 @@
 require('./styles/app.scss');
 
-const bathroomImgUrl = require('./img/internetbathroom.png');
+const bathroomImgUrl = require('./img/bathroom.png');
 const galaxyImgUrl = require('./img/galaxy.jpg');
 const GraffitiWall = require('./graffitiWall');
 const io = require('socket.io-client');
-const constants = require('./utils/constants');
+const {
+  IMAGE_WIDTH: width,
+  IMAGE_HEIGHT: height,
+  WALL_WIDTH: wallWidth,
+  WALL_HEIGHT: wallHeight,
+  WALL_X_OFFSET: offsetX,
+  WALL_Y_OFFSET: offsetY,
+} = require('./utils/constants');
 
 function loadImage(url) {
   const img = new Image();
@@ -90,7 +97,7 @@ function setBackgroundDimensions(img, backgroundEl) {
 
 const appCanvasWrapper = document.getElementById('app_canvas_wrapper');
 const appBackgroundEl = document.getElementById('app_background');
-const appCanvas = document.getElementById('app_canvas');
+const overlayCanvas = document.getElementById('overlay_canvas');
 const graffitiCanvas = document.getElementById('graffiti');
 const socket = io();
 
@@ -106,15 +113,6 @@ loadImage(galaxyImgUrl)
 
 loadImage(bathroomImgUrl)
   .then((bathroomImg) => {
-    const {
-      IMAGE_WIDTH: width,
-      IMAGE_HEIGHT: height,
-      WALL_WIDTH: wallWidth,
-      WALL_HEIGHT: wallHeight,
-      WALL_X_OFFSET: offsetX,
-      WALL_Y_OFFSET: offsetY,
-    } = constants;
-
     const scale = getScale(width, height);
 
     const graffitiWall = new GraffitiWall({
@@ -127,8 +125,8 @@ loadImage(bathroomImgUrl)
     });
 
     function setElementDimensions(elScale) {
-      setCanvasDimensions(appCanvas, width, height, elScale);
-      setCanvasImage(appCanvas, bathroomImg, elScale);
+      setCanvasDimensions(overlayCanvas, width, height, elScale);
+      setCanvasImage(overlayCanvas, bathroomImg, elScale);
       setWrapperDimensions(appCanvasWrapper, width, height, elScale);
       setGraffitiOffset(graffitiCanvas, appCanvasWrapper, offsetX, offsetY, elScale);
       graffitiWall.setSize(wallWidth, wallHeight, elScale);
