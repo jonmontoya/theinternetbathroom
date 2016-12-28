@@ -2,9 +2,10 @@ const GraffitiCanvas = require('./utils/graffitiCanvas.js');
 
 module.exports = class GraffitiWall {
   constructor(opts) {
-    const { graffitiEl, ws, imgUrl, width, height, scale } = opts;
+    const { drawEl, graffitiEl, ws, imgUrl, width, height, scale } = opts;
     this.ws = ws;
     this.graffitiCanvas = new GraffitiCanvas(graffitiEl);
+    this.drawEl = drawEl;
     this.color = '#00FF00';
     this.prevPos = null;
 
@@ -16,8 +17,8 @@ module.exports = class GraffitiWall {
     this.setSize(width, height, scale);
     if (imgUrl) this.primeCanvas(imgUrl);
     this.bindWS();
-    this.graffitiCanvas.canvas.addEventListener('mousedown', this.handleDown);
-    this.graffitiCanvas.canvas.addEventListener('mouseup', this.handleUp);
+    this.drawEl.addEventListener('mousedown', this.handleDown);
+    this.drawEl.addEventListener('mouseup', this.handleUp);
   }
 
   setSize(width, height, scale) {
@@ -28,7 +29,11 @@ module.exports = class GraffitiWall {
     this.scale = scale;
 
     this.graffitiCanvas.canvas.width = adjWidth;
+    this.drawEl.style.width = `${adjWidth}px`;
+
     this.graffitiCanvas.canvas.height = adjHeight;
+    this.drawEl.style.height = `${adjHeight}px`;
+
     this.graffitiCanvas.context.scale(scale, scale);
   }
 
@@ -68,17 +73,17 @@ module.exports = class GraffitiWall {
   handleDown(event) {
     this.prevPos = this.scalePos([event.offsetX, event.offsetY]);
 
-    this.graffitiCanvas.canvas.addEventListener('scrollstart', this.handleScroll);
+    this.drawEl.addEventListener('scrollstart', this.handleScroll);
 
     // this.graffitiCanvas.context.beginPath();
     // this.graffitiCanvas.context.moveTo(event.offsetX, event.offsetY);
 
-    this.graffitiCanvas.canvas.addEventListener('mousemove', this.handleMove);
+    this.drawEl.addEventListener('mousemove', this.handleMove);
   }
 
   handleUp() {
-    this.graffitiCanvas.canvas.removeEventListener('scrollstart', this.handleScroll);
-    this.graffitiCanvas.canvas.removeEventListener('mousemove', this.handleMove);
+    this.drawEl.removeEventListener('scrollstart', this.handleScroll);
+    this.drawEl.removeEventListener('mousemove', this.handleMove);
 
     this.prevPos = null;
   }

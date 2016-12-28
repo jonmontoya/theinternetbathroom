@@ -7,7 +7,7 @@
     "start": "node ./server/index.js",
     "lint": "./node_modules/.bin/eslint ./src",
     "build": "rm -rf ./assets/* && ./node_modules/.bin/webpack --progress --colors",
-    "deploy": "./node_modules/.bin/s3-deploy './assets/**' --cwd './assets/' --bucket theinternetbathroom-assets"
+    "deploy": "rm -rf ./assets/* && NODE_ENV=production ./node_modules/.bin/webpack --progress --colors && ./node_modules/.bin/s3-deploy './assets/**' --cwd './assets/' --bucket theinternetbathroom-assets"
   },
   "author": "Jonathan Montoya",
   "email": "lonlazarus@gmail.com",

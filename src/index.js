@@ -36,6 +36,7 @@ function setCanvasImage(canvas, img, scale) {
   context.imageSmoothingEnabled = false;
   context.scale(scale, scale);
   context.drawImage(img, 0, 0);
+  console.log(canvas, img);
 }
 
 function setWrapperDimensions(el, width, height, scale) {
@@ -99,6 +100,7 @@ const appCanvasWrapper = document.getElementById('app_canvas_wrapper');
 const appBackgroundEl = document.getElementById('app_background');
 const overlayCanvas = document.getElementById('overlay_canvas');
 const graffitiCanvas = document.getElementById('graffiti');
+const graffitiDrawCanvas = document.getElementById('graffiti_draw');
 const socket = io();
 
 loadImage(galaxyImgUrl)
@@ -117,6 +119,7 @@ loadImage(bathroomImgUrl)
 
     const graffitiWall = new GraffitiWall({
       graffitiEl: graffitiCanvas,
+      drawEl: graffitiDrawCanvas,
       ws: socket,
       imgUrl: null,
       width: wallWidth,
@@ -129,6 +132,7 @@ loadImage(bathroomImgUrl)
       setCanvasImage(overlayCanvas, bathroomImg, elScale);
       setWrapperDimensions(appCanvasWrapper, width, height, elScale);
       setGraffitiOffset(graffitiCanvas, appCanvasWrapper, offsetX, offsetY, elScale);
+      setGraffitiOffset(graffitiDrawCanvas, appCanvasWrapper, offsetX, offsetY, elScale);
       graffitiWall.setSize(wallWidth, wallHeight, elScale);
     }
 

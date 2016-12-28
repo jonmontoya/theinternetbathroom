@@ -44,6 +44,7 @@ server.register([require('inert'), require('./graffitiPlugin')], () => {
             <div id="app_canvas_wrapper">
               <canvas id="graffiti"></canvas>
               <canvas id="overlay_canvas"></canvas>
+              <canvas id="graffiti_draw"></canvas>
             </div>
           </div>
           <script src="${assetPath}bundle.js"></script>
