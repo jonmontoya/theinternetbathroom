@@ -4,12 +4,8 @@ const galaxyImgUrl = require('./img/galaxy.jpg');
 const GraffitiWall = require('./graffitiWall');
 const io = require('socket.io-client');
 const {
-  IMAGE_WIDTH: width,
-  IMAGE_HEIGHT: height,
-  WALL_WIDTH: wallWidth,
-  WALL_HEIGHT: wallHeight,
-  WALL_X_OFFSET: offsetX,
-  WALL_Y_OFFSET: offsetY,
+  IMAGE_WIDTH: wallWidth,
+  IMAGE_HEIGHT: wallHeight,
 } = require('./utils/constants');
 
 function loadImage(url) {
@@ -24,33 +20,25 @@ function loadImage(url) {
   return loadPromise;
 }
 
-function setWrapperDimensions(el, width, height, scale) {
-  el.style.width = `${parseInt(width * scale, 10)}px`;
-  el.style.height = `${parseInt(height * scale, 10)}px`;
-}
-
-function setGraffitiOffset(el, wrapperEl, offsetX, offsetY, scale) {
-  const offsetTop = wrapperEl.offsetTop + offsetY * scale;
-  const offsetLeft = wrapperEl.offsetLeft + offsetX * scale;
-
-  el.style.top = `${offsetTop}px`;
-  el.style.left = `${offsetLeft}px`;
-}
-
-function getScale(width, height) {
+function getDimensions(imgWidth, imgHeight) {
   const { clientWidth, clientHeight } = document.documentElement;
   const clientAspectRatio = clientWidth / clientHeight;
-  const aspectRatio = width / height;
+  const aspectRatio = imgWidth / imgHeight;
 
   let scale;
 
   if (aspectRatio > clientAspectRatio) {
-    scale = (clientWidth / width).toFixed(2);
+    scale = (clientHeight / imgHeight).toFixed(2);
   } else {
-    scale = (clientHeight / height).toFixed(2);
+    scale = (clientWidth / imgWidth).toFixed(2);
   }
 
-  return scale;
+  const width = parseInt(imgWidth * scale, 10);
+  const height = parseInt(imgHeight * scale, 10);
+  const left = parseInt((clientWidth - width) / 2, 10);
+  const top = parseInt((clientHeight - height) / 2, 10);
+
+  return { scale, width, height, top, left };
 }
 
 function setBackgroundDimensions(img, backgroundEl) {
@@ -81,10 +69,11 @@ function setBackgroundDimensions(img, backgroundEl) {
   backgroundEl.style.height = `${adjHeight}px`;
 }
 
-const appCanvasWrapper = document.getElementById('app_canvas_wrapper');
 const appBackgroundEl = document.getElementById('app_background');
 const graffitiCanvas = document.getElementById('graffiti');
 const graffitiDrawCanvas = document.getElementById('graffiti_draw');
+const bathroomForegroundEl = document.getElementById('bathroom_foreground');
+
 const socket = io();
 
 loadImage(galaxyImgUrl)
@@ -97,27 +86,40 @@ loadImage(galaxyImgUrl)
     });
   });
 
-  const scale = getScale(width, height);
+const graffitiElements = [
+  graffitiCanvas,
+  graffitiDrawCanvas,
+  bathroomForegroundEl,
+];
 
-  const graffitiWall = new GraffitiWall({
-    graffitiEl: graffitiCanvas,
-    drawEl: graffitiDrawCanvas,
-    ws: socket,
-    width: wallWidth,
-    height: wallHeight,
-    scale,
+const dimensions = getDimensions(wallWidth, wallWidth);
+
+const graffitiWall = new GraffitiWall({
+  graffitiEl: graffitiCanvas,
+  drawEl: graffitiDrawCanvas,
+  ws: socket,
+  width: wallWidth,
+  height: wallHeight,
+  scale: 1,
+});
+
+function setElementDimensions(elements, { top, left, width, height }) {
+  elements.forEach((el) => {
+    if (el.nodeName !== 'CANVAS') {
+      el.style.width = `${width}px`;
+      el.style.height = `${height}px`;
+    }
+
+    el.style.left = `${left}px`;
+    el.style.top = `${top}px`;
   });
+}
 
-  function setElementDimensions(elScale) {
-    setWrapperDimensions(appCanvasWrapper, width, height, elScale);
-    setGraffitiOffset(graffitiCanvas, appCanvasWrapper, offsetX, offsetY, elScale);
-    setGraffitiOffset(graffitiDrawCanvas, appCanvasWrapper, offsetX, offsetY, elScale);
-    graffitiWall.setSize(wallWidth, wallHeight, elScale);
-  }
+setElementDimensions(graffitiElements, dimensions);
+graffitiWall.setScale(dimensions.scale);
 
-  setElementDimensions(scale);
-
-  window.addEventListener('resize', () => {
-    const resizeScale = getScale(width, height);
-    setElementDimensions(resizeScale);
-  });
+window.addEventListener('resize', () => {
+  const resizeDimensions = getDimensions(wallWidth, wallHeight);
+  setElementDimensions(graffitiElements, resizeDimensions);
+  graffitiWall.setScale(resizeDimensions.scale);
+});

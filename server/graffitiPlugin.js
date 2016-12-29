@@ -14,8 +14,8 @@ const GraffitiCanvas = require('../src/utils/graffitiCanvas');
 const redis = require('redis').createClient;
 
 const {
-  WALL_WIDTH: wallWidth,
-  WALL_HEIGHT: wallHeight,
+  IMAGE_WIDTH: wallWidth,
+  IMAGE_HEIGHT: wallHeight,
 } = require('../src/utils/constants');
 
 const validator = new Validator();

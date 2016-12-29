@@ -4,10 +4,14 @@ module.exports = class GraffitiWall {
   constructor(opts) {
     const { drawEl, graffitiEl, ws, width, height, scale } = opts;
     this.ws = ws;
+    this.width = width;
+    this.height = height;
+
     this.graffitiCanvas = new GraffitiCanvas(document.createElement('canvas'), width, height);
 
     this.displayCanvas = graffitiEl;
     this.displayContext = this.displayCanvas.getContext('2d');
+    this.displayContext.imageSmoothingEnabled = false;
 
     this.drawEl = drawEl;
     this.color = '#00FF00';
@@ -18,7 +22,7 @@ module.exports = class GraffitiWall {
     this.handleUp = this.handleUp.bind(this);
     this.handleDown = this.handleDown.bind(this);
 
-    this.setSize(width, height, scale);
+    this.setScale(scale);
 
     this.bindWS();
     this.drawEl.addEventListener('mousedown', this.handleDown);
@@ -30,9 +34,9 @@ module.exports = class GraffitiWall {
     this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
   }
 
-  setSize(width, height, scale) {
-    const adjWidth = parseInt(width * scale, 10);
-    const adjHeight = parseInt(height * scale, 10);
+  setScale(scale) {
+    const adjWidth = parseInt(this.width * scale, 10);
+    const adjHeight = parseInt(this.height * scale, 10);
 
     this.scale = scale;
 
