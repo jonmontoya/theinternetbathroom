@@ -52,7 +52,7 @@ exports.register = (server, options, next) => {
 
   getGraffitiData(redisClient)
     .then((imgDataArray) => {
-      let graffitiImageData = imgDataArray;
+      let graffitiImageData = imgDataArray || '';
 
       const canvas = new Canvas();
       const graffitiCanvas = new GraffitiCanvas(canvas, wallWidth, wallHeight, graffitiImageData);
@@ -71,7 +71,7 @@ exports.register = (server, options, next) => {
           graffitiCanvas.drawStroke(data);
 
           graffitiImageData = graffitiCanvas.getImageDataArray();
-          // setGraffitiData(redisClient, graffitiImageData.data.toString());
+          setGraffitiData(redisClient, graffitiImageData);
 
           io.emit('stroke', data);
         });
