@@ -57,12 +57,16 @@ module.exports = class GraffitiWall {
 
   scalePos([x, y]) {
     return [
-      x / this.scale,
-      y / this.scale,
+      parseInt(x / this.scale, 10),
+      parseInt(y / this.scale, 10),
     ];
   }
 
   handleMove(event) {
+    const newPos = this.scalePos([event.offsetX, event.offsetY]);
+
+    if (this.prevPos[0] === newPos[0] && this.prevPos[1] === newPos[1]) return;
+
     this.ws.emit('stroke', {
       color: this.color,
       stroke: [
@@ -82,10 +86,6 @@ module.exports = class GraffitiWall {
     this.prevPos = this.scalePos([event.offsetX, event.offsetY]);
 
     this.drawEl.addEventListener('scrollstart', this.handleScroll);
-
-    // this.displayCanvas.context.beginPath();
-    // this.displayCanvas.context.moveTo(event.offsetX, event.offsetY);
-
     this.drawEl.addEventListener('mousemove', this.handleMove);
   }
 
