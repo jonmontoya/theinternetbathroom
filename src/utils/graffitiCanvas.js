@@ -8,23 +8,19 @@ module.exports = class GraffitiCanvas {
     this.canvas.height = height;
 
     this.context = canvas.getContext('2d');
-    this.context.imageSmoothingEnabled = false;
     this.context.lineWidth = 1;
 
-    this.drawStroke = this.drawStroke.bind(this);
+    this.drawPixel = this.drawPixel.bind(this);
 
     if (imgDataArray && imgDataArray.length) this.putImageDataArray(imgDataArray);
   }
 
-  drawStroke(stroke) {
-    const segment = stroke.stroke;
-    this.context.strokeStyle = stroke.color;
+  drawPixel(data) {
+    const { pixel, color } = data;
+    const [x, y] = pixel;
 
-    this.context.beginPath();
-    this.context.moveTo(segment[0][0], segment[0][1]);
-    this.context.lineTo(segment[1][0], segment[1][1]);
-    this.context.stroke();
-    this.context.closePath();
+    this.context.fillStyle = color;
+    this.context.fillRect(x, y, 1, 1);
   }
 
   getImageDataArray() {

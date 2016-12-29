@@ -8,25 +8,20 @@ module.exports =  {
 		required: ['location']
 	},
 
-	strokeSchema: {
-		id: '/Stroke',
+	pixelSchema: {
+		id: '/Pixel',
 		type: 'object',
 		properties: {
 			color: {
 				type: 'string'
 			},
-			stroke: {
+			pixel: {
 				type: 'array',
 				minItems: 2,
 				maxItems: 2,
-				items: {
-					type: 'array',
-					minItems: 2,
-					maxItems: 2,
-					items: {type: 'number'}
-				}
+				items: {type: 'number'},
 			}
 		},
-		required: ['color', 'stroke']
+		required: ['color', 'pixel']
 	}
 };

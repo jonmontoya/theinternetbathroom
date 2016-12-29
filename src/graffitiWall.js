@@ -8,8 +8,6 @@ module.exports = class GraffitiWall {
 
     this.displayCanvas = graffitiEl;
     this.displayContext = this.displayCanvas.getContext('2d');
-    this.displayContext.imageSmoothingEnabled = false;
-    this.displayContext.globalCompositeOperation = 'copy';
 
     this.drawEl = drawEl;
     this.color = '#00FF00';
@@ -33,7 +31,6 @@ module.exports = class GraffitiWall {
   }
 
   setSize(width, height, scale) {
-    // TODO: preserve strokes on resize
     const adjWidth = parseInt(width * scale, 10);
     const adjHeight = parseInt(height * scale, 10);
 
@@ -50,8 +47,8 @@ module.exports = class GraffitiWall {
   }
 
   bindWS() {
-    this.ws.on('stroke', (stroke) => {
-      this.graffitiCanvas.drawStroke(stroke);
+    this.ws.on('pixel', (data) => {
+      this.graffitiCanvas.drawPixel(data);
       this.refreshDisplayCanvas();
     });
 
@@ -73,15 +70,16 @@ module.exports = class GraffitiWall {
 
     if (this.prevPos[0] === newPos[0] && this.prevPos[1] === newPos[1]) return;
 
-    this.ws.emit('stroke', {
-      color: this.color,
-      stroke: [
-        this.prevPos,
-        this.scalePos([event.offsetX, event.offsetY]),
-      ],
-    });
+    this.emitPixel(newPos);
 
     this.prevPos = this.scalePos([event.offsetX, event.offsetY]);
+  }
+
+  emitPixel(pos) {
+    this.ws.emit('pixel', {
+      color: this.color,
+      pixel: pos,
+    });
   }
 
   handleScroll() {
@@ -89,10 +87,13 @@ module.exports = class GraffitiWall {
   }
 
   handleDown(event) {
-    this.prevPos = this.scalePos([event.offsetX, event.offsetY]);
+    const pos = this.scalePos([event.offsetX, event.offsetY]);
+    this.prevPos = pos;
 
     this.drawEl.addEventListener('scrollstart', this.handleScroll);
     this.drawEl.addEventListener('mousemove', this.handleMove);
+
+    this.emitPixel(pos);
   }
 
   handleUp() {

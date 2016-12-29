@@ -48,8 +48,6 @@ exports.register = (server, options, next) => {
     return;
   }
 
-  let graffitiImageData = [];
-
   getGraffitiData(redisClient)
     .then((imgDataArray) => {
       let graffitiImageData = imgDataArray || '';
@@ -63,17 +61,17 @@ exports.register = (server, options, next) => {
 
         socket.emit('initData', graffitiImageData);
 
-        socket.on('stroke', (data) => {
-          const result = validator.validate(data, schema.strokeSchema);
+        socket.on('pixel', (data) => {
+          const result = validator.validate(data, schema.pixelSchema);
 
           if (result.errors.length) return;
 
-          graffitiCanvas.drawStroke(data);
+          graffitiCanvas.drawPixel(data);
 
           graffitiImageData = graffitiCanvas.getImageDataArray();
           setGraffitiData(redisClient, graffitiImageData);
 
-          io.emit('stroke', data);
+          io.emit('pixel', data);
         });
 
         socket.on('close', () => {
@@ -81,7 +79,8 @@ exports.register = (server, options, next) => {
         });
       });
 
-    });
+    })
+    .catch(err => console.error(err));
 
   next();
 };
