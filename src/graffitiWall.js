@@ -9,6 +9,7 @@ module.exports = class GraffitiWall {
     this.displayCanvas = graffitiEl;
     this.displayContext = this.displayCanvas.getContext('2d');
     this.displayContext.imageSmoothingEnabled = false;
+    this.displayContext.globalCompositeOperation = 'copy';
 
     this.drawEl = drawEl;
     this.color = '#00FF00';
@@ -26,6 +27,11 @@ module.exports = class GraffitiWall {
     this.drawEl.addEventListener('mouseup', this.handleUp);
   }
 
+  refreshDisplayCanvas() {
+    this.displayContext.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
+    this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+  }
+
   setSize(width, height, scale) {
     // TODO: preserve strokes on resize
     const adjWidth = parseInt(width * scale, 10);
@@ -40,18 +46,18 @@ module.exports = class GraffitiWall {
     this.drawEl.style.height = `${adjHeight}px`;
 
     this.displayContext.scale(scale, scale);
-    this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+    this.refreshDisplayCanvas();
   }
 
   bindWS() {
     this.ws.on('stroke', (stroke) => {
       this.graffitiCanvas.drawStroke(stroke);
-      this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+      this.refreshDisplayCanvas();
     });
 
     this.ws.on('initData', (data) => {
       this.graffitiCanvas.putImageDataArray(data);
-      this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+      this.refreshDisplayCanvas();
     });
   }
 
