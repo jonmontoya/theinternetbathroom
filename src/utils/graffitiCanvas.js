@@ -1,13 +1,19 @@
 module.exports = class GraffitiCanvas {
-  constructor(canvas, image) {
+  constructor(canvas, width, height, imgDataArray) {
     this.canvas = canvas;
-    this.context = canvas.getContext('2d');
+    this.width = width;
+    this.height = height;
 
+    this.canvas.width = width;
+    this.canvas.height = height;
+
+    this.context = canvas.getContext('2d');
+    this.context.imageSmoothingEnabled = false;
     this.context.lineWidth = 1;
 
     this.drawStroke = this.drawStroke.bind(this);
 
-    if (image) this.context.drawImage(image, 0, 0);
+    if (imgDataArray && imgDataArray.length) this.putImageDataArray(imgDataArray);
   }
 
   drawStroke(stroke) {
@@ -21,7 +27,14 @@ module.exports = class GraffitiCanvas {
     this.context.closePath();
   }
 
-  getImage() {
-    return this.canvas.toDataURL();
+  getImageDataArray() {
+    const imgData = this.context.getImageData(0, 0, this.width, this.height);
+    return imgData.data.toString();
+  }
+
+  putImageDataArray(imgDataArray) {
+    const imageData = this.context.createImageData(this.width, this.height);
+    imageData.data.set(imgDataArray.split(','));
+    this.context.putImageData(imageData, 0, 0);
   }
 };

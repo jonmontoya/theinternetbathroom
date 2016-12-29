@@ -103,7 +103,6 @@ loadImage(galaxyImgUrl)
     graffitiEl: graffitiCanvas,
     drawEl: graffitiDrawCanvas,
     ws: socket,
-    imgUrl: null,
     width: wallWidth,
     height: wallHeight,
     scale,

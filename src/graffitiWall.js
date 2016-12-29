@@ -1,10 +1,15 @@
-const GraffitiCanvas = require('./utils/graffitiCanvas.js');
+const GraffitiCanvas = require('./utils/graffitiCanvas');
 
 module.exports = class GraffitiWall {
   constructor(opts) {
-    const { drawEl, graffitiEl, ws, imgUrl, width, height, scale } = opts;
+    const { drawEl, graffitiEl, ws, width, height, scale } = opts;
     this.ws = ws;
-    this.graffitiCanvas = new GraffitiCanvas(graffitiEl);
+    this.graffitiCanvas = new GraffitiCanvas(document.createElement('canvas'), width, height);
+
+    this.displayCanvas = graffitiEl;
+    this.displayContext = this.displayCanvas.getContext('2d');
+    this.displayContext.imageSmoothingEnabled = false;
+
     this.drawEl = drawEl;
     this.color = '#00FF00';
     this.prevPos = null;
@@ -15,36 +20,39 @@ module.exports = class GraffitiWall {
     this.handleDown = this.handleDown.bind(this);
 
     this.setSize(width, height, scale);
-    if (imgUrl) this.primeCanvas(imgUrl);
+
     this.bindWS();
     this.drawEl.addEventListener('mousedown', this.handleDown);
     this.drawEl.addEventListener('mouseup', this.handleUp);
   }
 
   setSize(width, height, scale) {
-    // TODO: Redraw canvas on resize
+    // TODO: preserve strokes on resize
     const adjWidth = parseInt(width * scale, 10);
     const adjHeight = parseInt(height * scale, 10);
 
     this.scale = scale;
 
-    this.graffitiCanvas.canvas.width = adjWidth;
+    this.displayCanvas.width = adjWidth;
     this.drawEl.style.width = `${adjWidth}px`;
 
-    this.graffitiCanvas.canvas.height = adjHeight;
+    this.displayCanvas.height = adjHeight;
     this.drawEl.style.height = `${adjHeight}px`;
 
-    this.graffitiCanvas.context.scale(scale, scale);
-  }
-
-  primeCanvas(imgUrl) {
-    const img = new Image();
-    img.onload = () => this.graffitiCanvas.context.drawImage(img, 0, 0);
-    img.src = imgUrl;
+    this.displayContext.scale(scale, scale);
+    this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
   }
 
   bindWS() {
-    this.ws.on('stroke', this.graffitiCanvas.drawStroke);
+    this.ws.on('stroke', (stroke) => {
+      this.graffitiCanvas.drawStroke(stroke);
+      this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+    });
+
+    this.ws.on('initData', (data) => {
+      this.graffitiCanvas.putImageDataArray(data);
+      this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+    });
   }
 
   scalePos([x, y]) {
@@ -75,8 +83,8 @@ module.exports = class GraffitiWall {
 
     this.drawEl.addEventListener('scrollstart', this.handleScroll);
 
-    // this.graffitiCanvas.context.beginPath();
-    // this.graffitiCanvas.context.moveTo(event.offsetX, event.offsetY);
+    // this.displayCanvas.context.beginPath();
+    // this.displayCanvas.context.moveTo(event.offsetX, event.offsetY);
 
     this.drawEl.addEventListener('mousemove', this.handleMove);
   }
