@@ -35,3 +35,18 @@ body {
   background-size: cover;
   position: absolute;
 }
+
+#color_picker {
+  position: absolute;
+  width: 3vw;
+  height: 3vw;
+  top: 1vw;
+  left: 1vw;
+}
+
+#color_input {
+  border: none;
+  display: block;
+  height: 0;
+  width: 0;
+}

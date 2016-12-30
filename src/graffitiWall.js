@@ -34,6 +34,10 @@ module.exports = class GraffitiWall {
     this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
   }
 
+  setColor(color) {
+    this.color = color;
+  }
+
   setScale(scale) {
     const adjWidth = parseInt(this.width * scale, 10);
     const adjHeight = parseInt(this.height * scale, 10);

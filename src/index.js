@@ -1,4 +1,5 @@
 require('./styles/app.scss');
+require('./jscolor');
 
 const galaxyImgUrl = require('./img/galaxy.jpg');
 const GraffitiWall = require('./graffitiWall');
@@ -74,6 +75,9 @@ const graffitiCanvas = document.getElementById('graffiti');
 const graffitiDrawCanvas = document.getElementById('graffiti_draw');
 const bathroomForegroundEl = document.getElementById('bathroom_foreground');
 
+const colorPickerButton = document.getElementById('color_picker');
+const colorPickerInput = document.getElementById('color_input');
+
 const socket = io();
 
 loadImage(galaxyImgUrl)
@@ -102,6 +106,15 @@ const graffitiWall = new GraffitiWall({
   height: wallHeight,
   scale: 1,
 });
+
+// Setup Color Picker
+colorPickerButton.onclick = () => {
+  colorPickerInput.jscolor.show();
+};
+
+colorPickerInput.onchange = () => {
+  graffitiWall.setColor(`#${colorPickerInput.jscolor.toString()}`);
+};
 
 function setElementDimensions(elements, { top, left, width, height }) {
   elements.forEach((el) => {
