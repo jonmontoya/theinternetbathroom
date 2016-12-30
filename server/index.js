@@ -30,13 +30,12 @@ server.register(require('./graffitiPlugin'), () => {
           <title>The Internet Bathroom</title>
         </head>
         <body>
-          <input id="color_input" class="jscolor" value="00ff00">
           <img id="app_background"></img>
           <div id="app">
             <canvas id="graffiti"></canvas>
             <div id="bathroom_foreground"></div>
             <canvas id="graffiti_draw"></canvas>
-            <button id="color_picker">
+            <div id="color_picker"></div>
           </div>
           <script src="${assetPath}bundle.js"></script>
         </body>

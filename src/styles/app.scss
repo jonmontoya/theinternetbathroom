@@ -39,22 +39,3 @@ body {
   background-size: cover;
   position: absolute;
 }
-
-#color_picker {
-  background-color: #00ff00;
-  background-image: url("../img/color_picker.png");
-  background-size: cover;
-  border: none;
-  height: 4em;
-  left: 1em;
-  position: absolute;
-  top: 1em;
-  width: 4em;
-}
-
-#color_input {
-  border: none;
-  display: block;
-  height: 0;
-  width: 0;
-}
