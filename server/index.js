@@ -26,6 +26,7 @@ server.register(require('./graffitiPlugin'), () => {
         <html>
         <head>
           <meta charset="UTF-8">
+          <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1, user-scalable=no">
           <title>The Internet Bathroom</title>
         </head>
         <body>
