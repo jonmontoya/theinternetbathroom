@@ -113,7 +113,9 @@ colorPickerButton.onclick = () => {
 };
 
 colorPickerInput.onchange = () => {
-  graffitiWall.setColor(`#${colorPickerInput.jscolor.toString()}`);
+  const color = `#${colorPickerInput.jscolor.toString()}`;
+  graffitiWall.setColor(color);
+  colorPickerButton.style.backgroundColor = color;
 };
 
 function setElementDimensions(elements, { top, left, width, height }) {
