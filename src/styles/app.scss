@@ -10,18 +10,6 @@ body {
   width: 100vw;
 }
 
-@keyframes backgroundAnimation {
-  0% {transform: rotate(0deg)}
-  100% {transform: rotate(360deg)}
-}
-
-#app_background {
-  animation: backgroundAnimation 480s linear infinite;
-  display: block;
-  position: absolute;
-  z-index: -2;
-}
-
 #graffiti {
   z-index: -1;
 }

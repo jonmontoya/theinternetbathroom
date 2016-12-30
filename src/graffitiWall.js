@@ -1,5 +1,27 @@
 const GraffitiCanvas = require('./utils/graffitiCanvas');
 
+function addEventListener(el, events, handler) {
+  if (events instanceof Array) {
+    events.forEach(event => el.addEventListener(event, handler));
+    return;
+  }
+
+  if (events instanceof String) {
+    el.addEventListener(events, handler);
+  }
+}
+
+function removeEventListener(el, events, handler) {
+  if (events instanceof Array) {
+    events.forEach(event => el.removeEventListener(event, handler));
+    return;
+  }
+
+  if (events instanceof String) {
+    el.removeEventListener(events, handler);
+  }
+}
+
 module.exports = class GraffitiWall {
   constructor(opts) {
     const { drawEl, graffitiEl, ws, width, height, scale } = opts;
@@ -25,8 +47,8 @@ module.exports = class GraffitiWall {
     this.setScale(scale);
 
     this.bindWS();
-    this.drawEl.addEventListener('mousedown', this.handleDown);
-    this.drawEl.addEventListener('mouseup', this.handleUp);
+    addEventListener(this.drawEl, ['mousedown', 'touchstart'], this.handleDown);
+    addEventListener(this.drawEl, ['mouseup', 'touchend'], this.handleUp);
   }
 
   refreshDisplayCanvas() {
@@ -73,14 +95,24 @@ module.exports = class GraffitiWall {
     ];
   }
 
-  handleMove(event) {
-    const newPos = this.scalePos([event.offsetX, event.offsetY]);
+  getPos(event) {
+    if (event.touches) {
+      return this.scalePos([
+        event.touches[0].clientX - event.touches[0].target.offsetLeft,
+        event.touches[0].clientY - event.touches[0].target.offsetTop,
+      ]);
+    }
 
+    return this.scalePos([event.offsetX, event.offsetY]);
+  }
+
+  handleMove(event) {
+    const newPos = this.getPos(event);
     if (this.prevPos[0] === newPos[0] && this.prevPos[1] === newPos[1]) return;
 
     this.emitPixel(newPos);
 
-    this.prevPos = this.scalePos([event.offsetX, event.offsetY]);
+    this.prevPos = newPos;
   }
 
   emitPixel(pos) {
@@ -95,18 +127,18 @@ module.exports = class GraffitiWall {
   }
 
   handleDown(event) {
-    const pos = this.scalePos([event.offsetX, event.offsetY]);
+    const pos = this.getPos(event);
     this.prevPos = pos;
 
     this.drawEl.addEventListener('scrollstart', this.handleScroll);
-    this.drawEl.addEventListener('mousemove', this.handleMove);
+    addEventListener(this.drawEl, ['mousemove', 'touchmove'], this.handleMove);
 
     this.emitPixel(pos);
   }
 
   handleUp() {
     this.drawEl.removeEventListener('scrollstart', this.handleScroll);
-    this.drawEl.removeEventListener('mousemove', this.handleMove);
+    removeEventListener(this.drawEl, ['mousemove', 'touchmove'], this.handleMove);
 
     this.prevPos = null;
   }
