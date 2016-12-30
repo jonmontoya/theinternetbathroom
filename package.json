@@ -35,7 +35,6 @@
   "dependencies": {
     "canvas": "^1.6.2",
     "hapi": "^16.0.2",
-    "inert": "^4.0.4",
     "jsonschema": "^1.1.1",
     "redis": "^2.6.3",
     "s3-deploy": "^0.7.3",

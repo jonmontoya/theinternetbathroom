@@ -15,17 +15,7 @@ server.connection({
   port: PORT,
 });
 
-server.register([require('inert'), require('./graffitiPlugin')], () => {
-  server.route({
-    method: 'GET',
-    path: '/assets/{param*}',
-    handler: {
-      directory: {
-        path: 'assets',
-      },
-    },
-  });
-
+server.register(require('./graffitiPlugin'), () => {
   // Add the route
   server.route({
     method: 'GET',
