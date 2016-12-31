@@ -35,11 +35,22 @@ function getWallScale(imgWidth, imgHeight) {
   const aspectRatio = imgWidth / imgHeight;
 
   if (aspectRatio > clientAspectRatio) {
-    return (clientHeight / imgHeight).toFixed(2);
+    return (clientWidth / imgWidth).toFixed(2);
   }
 
-  return (clientWidth / imgWidth).toFixed(2);
+  return (clientHeight / imgHeight).toFixed(2);
 }
+
+if (!displayApp.requestFullScreen) {
+  displayApp.requestFullScreen =
+    displayApp.webkitRequestFullScreen ||
+    displayApp.mozRequestFullScreen ||
+    displayApp.msRequestFullScreen;
+}
+
+displayApp.addEventListener('touchstart', () => {
+  displayApp.requestFullScreen();
+});
 
 setBackgroundImage(backgroundImageEl, galaxyImgUrl)
   .then(() => {
