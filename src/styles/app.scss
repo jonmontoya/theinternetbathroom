@@ -1,14 +1,17 @@
 body {
-  background-color: black;
   margin: 0;
-  overflow: hidden;
 }
 
-#app {
+#app_wrapper {
   align-items: center;
+  background-color: black;
   display: flex;
   height: 100vh;
   justify-content: center;
   overflow: hidden;
   width: 100vw;
+}
+
+#app {
+  overflow: hidden;
 }

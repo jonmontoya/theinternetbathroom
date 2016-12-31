@@ -23,6 +23,19 @@ function removeEventListener(el, events, handler) {
   }
 }
 
+function appendAndOffsetElementByParent(element, parent) {
+  return new Promise((resolve) => {
+    parent.appendChild(element);
+    const interval = setInterval(() => {
+      if (element.offsetParent === parent) {
+        clearInterval(interval);
+        element.style.top = `${-element.offsetTop}px`;
+        resolve();
+      }
+    }, 250);
+  });
+}
+
 module.exports = class GraffitiWall {
   constructor({ el, scale, foregroundUrl, width, height, ws }) {
     this.width = width;
@@ -83,32 +96,20 @@ module.exports = class GraffitiWall {
     this.color = color;
   }
 
-  appendAndOffsetElement(element) {
-    this.el.appendChild(element);
-    const interval = setInterval(() => {
-      if (element.offsetParent.className === 'graffiti') {
-        clearInterval(interval);
-        element.style.top = `${-element.offsetTop}px`;
-      }
-    }, 10);
-  }
-
   setupVisibleElements(elements) {
     elements.forEach((element) => {
       element.className = 'graffiti_visible';
-      this.appendAndOffsetElement(element);
+      appendAndOffsetElementByParent(element, this.el);
     });
   }
 
   setScale(scale) {
     this.scale = scale;
-    this.el.style.transform = `scale(${this.scale}, ${this.scale})`;
-
     this.calcScaleOffset();
   }
 
   calcScaleOffset() {
-    const { offsetLeft, offsetTop } = this.el;
+    const { offsetLeft, offsetTop } = this.el.parentNode;
 
     const scaledElWidth = this.width * this.scale;
     const scaledElHeight = this.height * this.scale;

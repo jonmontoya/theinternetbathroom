@@ -1,9 +1,14 @@
 require('./styles/app.scss');
-require('./background');
+require('./styles/background.scss');
+
+const galaxyImgUrl = require('./img/galaxy.jpg');
 const bathroomForegroundUrl = require('./img/bathroom_foreground.png');
+
+const setBackgroundImage = require('./setBackgroundImage');
 
 const GraffitiWall = require('./graffitiWall');
 const ColorPicker = require('./colorPicker');
+
 const io = require('socket.io-client');
 
 const {
@@ -13,7 +18,16 @@ const {
 
 const graffitiEl = document.getElementById('graffiti');
 const colorPickerEl = document.getElementById('color_picker');
+const displayApp = document.getElementById('app');
+const backgroundImageEl = document.getElementById('app_background');
+
+displayApp.style.width = `${wallWidth}px`;
+displayApp.style.height = `${wallHeight}px`;
+
 const socket = io();
+
+// setup color picker
+const colorPicker = new ColorPicker(colorPickerEl);
 
 function getWallScale(imgWidth, imgHeight) {
   const { clientWidth, clientHeight } = document.documentElement;
@@ -27,20 +41,29 @@ function getWallScale(imgWidth, imgHeight) {
   return (clientWidth / imgWidth).toFixed(2);
 }
 
-const graffitiWall = new GraffitiWall({
-  el: graffitiEl,
-  scale: getWallScale(wallWidth, wallHeight),
-  foregroundUrl: bathroomForegroundUrl,
-  width: wallWidth,
-  height: wallHeight,
-  ws: socket,
-});
+setBackgroundImage(backgroundImageEl, galaxyImgUrl)
+  .then(() => {
+    const scale = getWallScale(wallWidth, wallHeight);
 
-window.addEventListener('resize', () => {
-  graffitiWall.setScale(getWallScale(wallWidth, wallHeight));
-});
+    const graffitiWall = new GraffitiWall({
+      el: graffitiEl,
+      scale,
+      foregroundUrl: bathroomForegroundUrl,
+      width: wallWidth,
+      height: wallHeight,
+      ws: socket,
+    });
 
+    colorPicker.on('color', color => graffitiWall.setColor(color));
 
-// setup color picker
-const colorPicker = new ColorPicker(colorPickerEl);
-colorPicker.on('color', color => graffitiWall.setColor(color));
+    displayApp.style.transform = `scale(${scale})`;
+    graffitiWall.setScale(scale);
+
+    graffitiEl.style.top = `${-graffitiEl.offsetTop}px`;
+
+    window.addEventListener('resize', () => {
+      const resizeScale = getWallScale(wallWidth, wallHeight);
+      graffitiWall.setScale(resizeScale);
+      displayApp.style.transform = `scale(${resizeScale})`;
+    });
+  });

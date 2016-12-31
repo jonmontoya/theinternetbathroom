@@ -7,7 +7,6 @@ if (env === 'development') require('./devServer');
 
 const Hapi = require('hapi');
 
-// Create a server with a host and port
 const server = new Hapi.Server();
 
 server.connection({
@@ -16,7 +15,6 @@ server.connection({
 });
 
 server.register(require('./graffitiPlugin'), () => {
-  // Add the route
   server.route({
     method: 'GET',
     path: '/',
@@ -30,9 +28,11 @@ server.register(require('./graffitiPlugin'), () => {
           <title>The Internet Bathroom</title>
         </head>
         <body>
-          <img id="app_background"></img>
-          <div id="app">
-            <div id="graffiti"></div>
+          <div id="app_wrapper">
+            <div id="app">
+              <img id="app_background"></img>
+              <div id="graffiti"></div>
+            </div>
           </div>
           <div id="color_picker"></div>
           <script src="${assetPath}bundle.js"></script>
@@ -42,7 +42,6 @@ server.register(require('./graffitiPlugin'), () => {
     },
   });
 
-  // Start the server
   server.start((err) => {
     if (err) {
       throw err;

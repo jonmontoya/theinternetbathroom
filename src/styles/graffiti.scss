@@ -1,9 +1,10 @@
 .graffiti {
   cursor: crosshair;
+  position: relative;
 }
 
 .graffiti_visible {
-  height: inherit;  
+  height: inherit;
   position: relative;
   width: inherit;
 }

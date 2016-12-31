@@ -6,6 +6,5 @@
 #app_background {
   animation: backgroundAnimation 480s linear infinite;
   display: block;
-  position: absolute;
-  z-index: -2;
+  position: relative;
 }
