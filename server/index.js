@@ -31,10 +31,10 @@ server.register(require('./graffitiPlugin'), () => {
         </head>
         <body>
           <img id="app_background"></img>
-          <div id="color_picker"></div>
           <div id="app">
             <div id="graffiti"></div>
           </div>
+          <div id="color_picker"></div>
           <script src="${assetPath}bundle.js"></script>
         </body>
         </html>
