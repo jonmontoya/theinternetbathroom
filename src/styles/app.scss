@@ -5,25 +5,10 @@ body {
 }
 
 #app {
+  align-items: center;
+  display: flex;
   height: 100vh;
+  justify-content: center;
   overflow: hidden;
   width: 100vw;
-}
-
-#graffiti {
-  z-index: -1;
-}
-
-#graffiti_draw {
-  cursor: crosshair;
-}
-
-#graffiti_draw, #graffiti, #bathroom_foreground {
-  position: absolute;
-}
-
-#bathroom_foreground {
-  background-image: url("../img/bathroom_foreground.png");
-  background-size: cover;
-  position: absolute;
 }

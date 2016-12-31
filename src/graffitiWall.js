@@ -1,3 +1,4 @@
+require('./styles/graffiti.scss');
 const GraffitiCanvas = require('./utils/graffitiCanvas');
 
 function addEventListener(el, events, handler) {
@@ -23,22 +24,44 @@ function removeEventListener(el, events, handler) {
 }
 
 module.exports = class GraffitiWall {
-  constructor(opts) {
-    const { drawEl, graffitiEl, ws, width, height, scale } = opts;
-    this.ws = ws;
+  constructor({ el, scale, foregroundUrl, width, height, ws }) {
     this.width = width;
     this.height = height;
 
-    this.graffitiCanvas = new GraffitiCanvas(document.createElement('canvas'), width, height);
+    this.ws = ws;
 
-    this.displayCanvas = graffitiEl;
+    this.el = el;
+    this.el.classList.add('graffiti');
+    this.el.style.width = `${width}px`;
+    this.el.style.height = `${height}px`;
+
+    // create graffiti elements
+    this.graffitiCanvas = new GraffitiCanvas(document.createElement('canvas'), width, height);
+    this.displayCanvas = document.createElement('canvas');
+    this.foregroundEl = document.createElement('div');
+
+    this.displayCanvas.width = this.width;
+    this.displayCanvas.height = this.height;
+
+    const visibleElements = [
+      this.displayCanvas,
+      this.foregroundEl,
+    ];
+
+    this.setupVisibleElements(visibleElements);
+
+    // setup foreground background
+    this.foregroundEl.style.backgroundImage = `url("${foregroundUrl}")`;
+    this.foregroundEl.style.backgroundSize = 'cover';
+
+    // setup display canvas
     this.displayContext = this.displayCanvas.getContext('2d');
     this.displayContext.imageSmoothingEnabled = false;
 
-    this.drawEl = drawEl;
     this.color = '#00FF00';
     this.prevPos = null;
 
+    // bind draw events
     this.handleMove = this.handleMove.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
     this.handleUp = this.handleUp.bind(this);
@@ -47,8 +70,8 @@ module.exports = class GraffitiWall {
     this.setScale(scale);
 
     this.bindWS();
-    addEventListener(this.drawEl, ['mousedown', 'touchstart'], this.handleDown);
-    addEventListener(this.drawEl, ['mouseup', 'touchend'], this.handleUp);
+    addEventListener(this.el, ['mousedown', 'touchstart'], this.handleDown);
+    addEventListener(this.el, ['mouseup', 'touchend'], this.handleUp);
   }
 
   refreshDisplayCanvas() {
@@ -60,20 +83,41 @@ module.exports = class GraffitiWall {
     this.color = color;
   }
 
+  appendAndOffsetElement(element) {
+    this.el.appendChild(element);
+    const interval = setInterval(() => {
+      if (element.offsetParent.className === 'graffiti') {
+        clearInterval(interval);
+        element.style.top = `${-element.offsetTop}px`;
+      }
+    }, 10);
+  }
+
+  setupVisibleElements(elements) {
+    elements.forEach((element) => {
+      element.className = 'graffiti_visible';
+      this.appendAndOffsetElement(element);
+    });
+  }
+
   setScale(scale) {
-    const adjWidth = parseInt(this.width * scale, 10);
-    const adjHeight = parseInt(this.height * scale, 10);
-
     this.scale = scale;
+    this.el.style.transform = `scale(${this.scale}, ${this.scale})`;
 
-    this.displayCanvas.width = adjWidth;
-    this.drawEl.style.width = `${adjWidth}px`;
+    this.calcScaleOffset();
+  }
 
-    this.displayCanvas.height = adjHeight;
-    this.drawEl.style.height = `${adjHeight}px`;
+  calcScaleOffset() {
+    const { offsetLeft, offsetTop } = this.el;
 
-    this.displayContext.scale(scale, scale);
-    this.refreshDisplayCanvas();
+    const scaledElWidth = this.width * this.scale;
+    const scaledElHeight = this.height * this.scale;
+
+    const deltaWidth = scaledElWidth - this.width;
+    const deltaHeight = scaledElHeight - this.height;
+
+    this.adjustOffsetLeft = offsetLeft - (deltaWidth / 2);
+    this.adjustOffsetTop = offsetTop - (deltaHeight / 2);
   }
 
   bindWS() {
@@ -88,22 +132,15 @@ module.exports = class GraffitiWall {
     });
   }
 
-  scalePos([x, y]) {
-    return [
-      parseInt(x / this.scale, 10),
-      parseInt(y / this.scale, 10),
-    ];
-  }
 
   getPos(event) {
-    if (event.touches) {
-      return this.scalePos([
-        event.touches[0].clientX - event.touches[0].target.offsetLeft,
-        event.touches[0].clientY - event.touches[0].target.offsetTop,
-      ]);
-    }
+    const e = event.touches ? event.touches[0] : event;
+    const { clientX, clientY } = e;
 
-    return this.scalePos([event.offsetX, event.offsetY]);
+    return [
+      parseInt((clientX - this.adjustOffsetLeft) / this.scale, 10),
+      parseInt((clientY - this.adjustOffsetTop) / this.scale, 10),
+    ];
   }
 
   handleMove(event) {
@@ -130,15 +167,15 @@ module.exports = class GraffitiWall {
     const pos = this.getPos(event);
     this.prevPos = pos;
 
-    this.drawEl.addEventListener('scrollstart', this.handleScroll);
-    addEventListener(this.drawEl, ['mousemove', 'touchmove'], this.handleMove);
+    this.el.addEventListener('scrollstart', this.handleScroll);
+    addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
 
     this.emitPixel(pos);
   }
 
   handleUp() {
-    this.drawEl.removeEventListener('scrollstart', this.handleScroll);
-    removeEventListener(this.drawEl, ['mousemove', 'touchmove'], this.handleMove);
+    this.el.removeEventListener('scrollstart', this.handleScroll);
+    removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
 
     this.prevPos = null;
   }

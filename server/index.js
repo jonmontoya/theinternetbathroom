@@ -31,11 +31,9 @@ server.register(require('./graffitiPlugin'), () => {
         </head>
         <body>
           <img id="app_background"></img>
+          <div id="color_picker"></div>
           <div id="app">
-            <canvas id="graffiti"></canvas>
-            <div id="bathroom_foreground"></div>
-            <canvas id="graffiti_draw"></canvas>
-            <div id="color_picker"></div>
+            <div id="graffiti"></div>
           </div>
           <script src="${assetPath}bundle.js"></script>
         </body>
