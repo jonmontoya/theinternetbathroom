@@ -18,7 +18,7 @@ const {
 
 const graffitiEl = document.getElementById('graffiti');
 const colorPickerEl = document.getElementById('color_picker');
-const displayApp = document.getElementById('app');
+const displayApp = document.getElementById('app_scalable');
 const backgroundImageEl = document.getElementById('app_background');
 
 displayApp.style.width = `${wallWidth}px`;
@@ -48,14 +48,10 @@ if (!displayApp.requestFullScreen) {
     displayApp.msRequestFullScreen;
 }
 
-displayApp.addEventListener('touchstart', () => {
-  displayApp.requestFullScreen();
-});
+const scale = getWallScale(wallWidth, wallHeight);
 
 setBackgroundImage(backgroundImageEl, galaxyImgUrl)
   .then(() => {
-    const scale = getWallScale(wallWidth, wallHeight);
-
     const graffitiWall = new GraffitiWall({
       el: graffitiEl,
       scale,

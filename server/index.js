@@ -28,13 +28,13 @@ server.register(require('./graffitiPlugin'), () => {
           <title>The Internet Bathroom</title>
         </head>
         <body>
-          <div id="app_wrapper">
-            <div id="app">
+          <div id="app">
+            <div id="color_picker"></div>
+            <div id="app_scalable">
               <img id="app_background"></img>
               <div id="graffiti"></div>
             </div>
           </div>
-          <div id="color_picker"></div>
           <script src="${assetPath}bundle.js"></script>
         </body>
         </html>
@@ -46,6 +46,6 @@ server.register(require('./graffitiPlugin'), () => {
     if (err) {
       throw err;
     }
-    console.log('Server running at:', server.info.uri);
+    console.info('Server running at:', server.info.uri);
   });
 });

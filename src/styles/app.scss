@@ -2,7 +2,7 @@ body {
   margin: 0;
 }
 
-#app_wrapper {
+#app {
   align-items: center;
   background-color: black;
   display: flex;
@@ -12,6 +12,7 @@ body {
   width: 100vw;
 }
 
-#app {
+#app_scalable {
   overflow: hidden;
+  transition: transform .5s;
 }
