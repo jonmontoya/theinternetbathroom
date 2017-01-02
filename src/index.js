@@ -50,6 +50,17 @@ if (!displayApp.requestFullScreen) {
 
 const scale = getWallScale(wallWidth, wallHeight);
 
+if (!displayApp.requestFullScreen) {
+  displayApp.requestFullScreen =
+    displayApp.webkitRequestFullScreen ||
+    displayApp.mozRequestFullScreen ||
+    displayApp.msRequestFullScreen;
+}
+
+displayApp.addEventListener('touchstart', () => {
+  displayApp.requestFullScreen();
+});
+
 setBackgroundImage(backgroundImageEl, galaxyImgUrl)
   .then(() => {
     const graffitiWall = new GraffitiWall({
