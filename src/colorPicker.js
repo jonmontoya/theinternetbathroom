@@ -11,7 +11,7 @@ module.exports = class ColorPicker extends EventEmitter {
     buttonEl.className = 'color_picker_button';
     const inputEl = document.createElement('INPUT');
     inputEl.className = 'color_picker_input';
-    const picker = new jscolor(inputEl);
+    const picker = new jscolor(inputEl); // eslint-disable-line
 
     colorPickerEl.appendChild(inputEl);
     colorPickerEl.appendChild(buttonEl);

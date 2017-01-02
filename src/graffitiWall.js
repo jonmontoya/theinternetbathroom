@@ -76,7 +76,6 @@ module.exports = class GraffitiWall {
 
     // bind draw events
     this.handleMove = this.handleMove.bind(this);
-    this.handleScroll = this.handleScroll.bind(this);
     this.handleUp = this.handleUp.bind(this);
     this.handleDown = this.handleDown.bind(this);
 
@@ -160,22 +159,16 @@ module.exports = class GraffitiWall {
     });
   }
 
-  handleScroll() {
-    event.preventDefault();
-  }
-
   handleDown(event) {
     const pos = this.getPos(event);
     this.prevPos = pos;
 
-    this.el.addEventListener('scrollstart', this.handleScroll);
     addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
 
     this.emitPixel(pos);
   }
 
   handleUp() {
-    this.el.removeEventListener('scrollstart', this.handleScroll);
     removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
 
     this.prevPos = null;
