@@ -8,7 +8,6 @@ module.exports = class GraffitiCanvas {
     this.canvas.height = height;
 
     this.context = canvas.getContext('2d');
-    this.context.lineWidth = 1;
 
     this.drawPixel = this.drawPixel.bind(this);
 
@@ -20,7 +19,7 @@ module.exports = class GraffitiCanvas {
     const [x, y] = pixel;
 
     this.context.fillStyle = color;
-    this.context.fillRect(x, y, 1, 1);
+    this.context.fillRect(x, y, 3, 3);
   }
 
   getImageDataArray() {

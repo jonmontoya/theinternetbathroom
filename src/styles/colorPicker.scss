@@ -10,7 +10,9 @@
   background-size: cover;
   border: none;
   height: 4em;
+  position: absolute;
   width: 4em;
+  z-index: 1;
 }
 
 .color_picker_input {
