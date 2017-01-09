@@ -77,7 +77,7 @@ setBackgroundImage(backgroundImageEl, galaxyImgUrl)
     displayApp.style.transform = `scale(${scale})`;
     graffitiWall.setScale(scale);
 
-    graffitiEl.style.top = `${-graffitiEl.offsetTop}px`;
+    graffitiEl.style.top = `${-backgroundImageEl.height}px`;
 
     window.addEventListener('resize', () => {
       const resizeScale = getWallScale(wallWidth, wallHeight);

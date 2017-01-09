@@ -23,19 +23,6 @@ function removeEventListener(el, events, handler) {
   }
 }
 
-function appendAndOffsetElementByParent(element, parent) {
-  return new Promise((resolve) => {
-    parent.appendChild(element);
-    const interval = setInterval(() => {
-      if (element.offsetParent === parent) {
-        clearInterval(interval);
-        element.style.top = `${-element.offsetTop}px`;
-        resolve();
-      }
-    }, 250);
-  });
-}
-
 module.exports = class GraffitiWall {
   constructor({ el, scale, foregroundUrl, width, height, ws }) {
     this.width = width;
@@ -96,9 +83,12 @@ module.exports = class GraffitiWall {
   }
 
   setupVisibleElements(elements) {
+    let topOffset = 0;
     elements.forEach((element) => {
       element.className = 'graffiti_visible';
-      appendAndOffsetElementByParent(element, this.el);
+      element.style.top = `${-topOffset}px`;
+      this.el.appendChild(element);
+      topOffset += this.height;
     });
   }
 
