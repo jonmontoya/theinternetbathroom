@@ -28,6 +28,8 @@ module.exports = class GraffitiWall {
     this.width = width;
     this.height = height;
 
+    this.stroke = [];
+
     this.ws = ws;
 
     this.el = el;
@@ -56,6 +58,7 @@ module.exports = class GraffitiWall {
 
     // setup display canvas
     this.displayContext = this.displayCanvas.getContext('2d');
+    this.displayContext.lineWidth = 3;
     this.displayContext.imageSmoothingEnabled = false;
 
     this.color = '#00FF00';
@@ -111,8 +114,8 @@ module.exports = class GraffitiWall {
   }
 
   bindWS() {
-    this.ws.on('pixel', (data) => {
-      this.graffitiCanvas.drawPixel(data);
+    this.ws.on('stroke', (data) => {
+      this.graffitiCanvas.drawStroke(data);
       this.refreshDisplayCanvas();
     });
 
@@ -135,32 +138,45 @@ module.exports = class GraffitiWall {
 
   handleMove(event) {
     const newPos = this.getPos(event);
-    if (this.prevPos[0] === newPos[0] && this.prevPos[1] === newPos[1]) return;
+    const [newX, newY] = newPos;
+    const [prevX, prevY] = this.prevPos;
 
-    this.emitPixel(newPos);
+    if (prevX === newX && prevY === newY) return;
+
+    this.displayContext.lineTo(newX, newY);
+    this.displayContext.moveTo(newX, newY);
+    this.displayContext.stroke();
+
+    this.stroke.push(this.prevPos);
 
     this.prevPos = newPos;
   }
 
-  emitPixel(pos) {
-    this.ws.emit('pixel', {
+  emitStroke() {
+    this.ws.emit('stroke', {
       color: this.color,
-      pixel: pos,
+      stroke: this.stroke,
     });
   }
 
   handleDown(event) {
     const pos = this.getPos(event);
+    const [posX, posY] = pos;
+
     this.prevPos = pos;
 
-    addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
+    this.displayContext.strokeStyle = this.color;
+    this.displayContext.beginPath();
+    this.displayContext.moveTo(posX, posY);
 
-    this.emitPixel(pos);
+    addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
   }
 
   handleUp() {
     removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
-
+    this.displayContext.closePath();
+    this.emitStroke();
+    this.stroke = [];
     this.prevPos = null;
   }
 };

@@ -9,7 +9,6 @@ const GRAFFITI_REDIS_KEY = 'graffiti_image_data';
 const { Validator } = require('jsonschema');
 const schema = require('./schema.js');
 const Canvas = require('canvas');
-const redisAdapter = require('socket.io-redis');
 const GraffitiCanvas = require('../src/utils/graffitiCanvas');
 const redis = require('redis').createClient;
 
@@ -35,13 +34,14 @@ function setGraffitiData(client, data) {
 }
 
 exports.register = (server, options, next) => {
-  const io = require('socket.io')(server.listener);
   console.info(`Socket Server Connected on ${server.info.uri}.`)
 
   const redisClient = redis(REDIS_PORT, REDIS_HOST);
 
+  let io;
+
   try {
-    io.adapter(redisAdapter({ host: REDIS_HOST, port: REDIS_PORT }));
+    io = require('socket.io')(server.listener);
     console.info(`Socket Redis Adapter Connected to ${REDIS_HOST}:${REDIS_PORT}`);
   } catch (err) {
     console.error('Socket Server Connection Error: ', err);
@@ -61,24 +61,23 @@ exports.register = (server, options, next) => {
 
         socket.emit('initData', graffitiImageData);
 
-        socket.on('pixel', (data) => {
-          const result = validator.validate(data, schema.pixelSchema);
+        socket.on('stroke', (data) => {
+          const result = validator.validate(data, schema.strokeSchema);
 
           if (result.errors.length) return;
 
-          graffitiCanvas.drawPixel(data);
+          graffitiCanvas.drawStroke(data);
 
           graffitiImageData = graffitiCanvas.getImageDataArray();
           setGraffitiData(redisClient, graffitiImageData);
 
-          io.emit('pixel', data);
+          io.emit('stroke', data);
         });
 
         socket.on('close', () => {
           console.info(`Graffiti Socket Connection Disconnected from ${socketAddress}.`);
         });
       });
-
     })
     .catch(err => console.error(err));
 
