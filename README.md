@@ -8,19 +8,39 @@ This is a fun little shared scrawl-space written over holiday, it gives the expe
 
 ## To Run Locally
 
-Make sure you have redis installed on your machine, it uses it to route messaging and store image data. Run this commands, it'll default to a webpack-dev server running development mode:
+Make sure you have redis installed on your machine, it uses it to route messaging and store image data. Run these commands, it'll default to a webpack-dev server running development mode:
+
+### Install Cairo (Mac)
+
+```
+xcode-select --install
+brew install pkgconfig
+brew install pixman
+brew install libjpeg
+brew install giflib
+brew install cairo
+```
+
+### Install NPM Packages and Start Server
 
 `npm install && npm start`
+
+## Deploy
+
+This app requires you to have an AWS account and an S3 bucket setup
 
 ## Todo
 
 I have a few things left to do, yet:
 
+- [ ] Update ReadMe
+  - [ ] Cairo install for Linux
+- [ ] Re-add redis socket.io adapter for scalability.
+- [ ] Auto create and deploy S3 bucket through EB configs.
 - [ ] Add meta tags for social sharing.
 - [ ] Add ico file.
 - [ ] Clear wall for fresh graffiti.
-- [ ] Better mobile experience.
-  - [ ] Access to color changes in fullscreen mode.
-  - [ ] Zoom to paint.
+- [ ] Fullscreen mode for mobile.
+- [ ] Meteor erase feature.
 - [ ] Multiple brush sizes.
 - [ ] Modify elastic beanstalk to allow ws connections and not default to xhr polling.
