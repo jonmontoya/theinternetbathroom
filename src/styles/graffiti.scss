@@ -1,6 +1,8 @@
 .graffiti {
-  cursor: crosshair;
   position: relative;
+  &.editing {
+    cursor: crosshair;
+  }
 }
 
 .graffiti_visible {

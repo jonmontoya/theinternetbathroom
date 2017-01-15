@@ -1,6 +1,6 @@
 .graffiti_toolbox {
-  background-color: #00ff00;
-  padding: 1px;
+  background-color: white;
+  padding: 0;
   left: 15px;
   position: absolute;
   top: 15px;
@@ -16,11 +16,11 @@
   background-color: transparent;
   border: none;
   height: 24px;
-  margin: 1px;
+  margin: 2px;
   overflow: hidden;
   width: 24px;
 
   &.edit {
-    background-image: url("../img/edit.png");
+    background-image: url("../img/spray_paint.png");
   }
 }

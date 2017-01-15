@@ -2,23 +2,19 @@ require('./styles/toolbox.scss');
 const ColorPicker = require('./colorPicker');
 const EventEmitter = require('events');
 
-function detectMobile() {
-  if (window.navigator.standalone) return false;
-  if (window.innerWidth <= 800 || window.innerHeight <= 800) return true;
-  return false;
-}
-
 module.exports = class Toolbox extends EventEmitter {
   constructor(opts) {
     super();
     const { el } = opts;
+
+    this.editing = false;
 
     this.el = el;
     this.el.className = 'graffiti_toolbox';
 
     this.drawButtonEl = document.createElement('button');
     this.drawButtonEl.className = 'graffiti_button edit';
-    this.drawButtonEl.onclick = this.setFullScreen.bind(this);
+    this.drawButtonEl.onclick = this.setEditing.bind(this);
 
     this.toolboxEl = document.createElement('div');
     this.colorPickerEl = document.createElement('div');
@@ -33,20 +29,16 @@ module.exports = class Toolbox extends EventEmitter {
     this.el.appendChild(this.drawButtonEl);
     this.el.appendChild(this.toolboxEl);
 
-    if (detectMobile()) {
-      this.toolboxEl.classList.add('hide');
-    } else {
-      this.drawButtonEl.classList.add('hide');
-    }
+    this.unsetEditing();
   }
 
-  setFullScreen() {
-    this.emit('fullscreen', true);
+  setEditing() {
+    this.emit('editing', true);
     this.toolboxEl.classList.remove('hide');
     this.drawButtonEl.classList.add('hide');
   }
 
-  showEditButton() {
+  unsetEditing() {
     this.toolboxEl.classList.add('hide');
     this.drawButtonEl.classList.remove('hide');
   }

@@ -72,8 +72,18 @@ module.exports = class GraffitiWall {
     this.setScale(scale);
 
     this.bindWS();
+  }
+
+  setEditMode() {
+    this.el.classList.add('editing');
     addEventListener(this.el, ['mousedown', 'touchstart'], this.handleDown);
     addEventListener(this.el, ['mouseup', 'touchend'], this.handleUp);
+  }
+
+  unsetEditMode() {
+    this.el.classList.remove('editing');
+    removeEventListener(this.el, ['mousedown', 'touchstart'], this.handleDown);
+    removeEventListener(this.el, ['mouseup', 'touchend'], this.handleUp);
   }
 
   refreshDisplayCanvas() {

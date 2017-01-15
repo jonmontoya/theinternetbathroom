@@ -58,18 +58,24 @@ setBackgroundImage(backgroundImageEl, galaxyImgUrl)
     });
 
     toolbox.on('color', color => graffitiWall.setColor(color));
-    toolbox.on('fullscreen', (request) => {
+    toolbox.on('editing', () => {
+      graffitiWall.setEditMode();
+
       if (!screenfull.enabled) return;
-      if (request) {
-        screenfull.request();
-      } else {
-        screenfull.exit();
-      }
+      screenfull.request();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (!event.keyCode === 27) return;
+      toolbox.unsetEditing();
+      graffitiWall.unsetEditMode();
     });
 
     if (screenfull.enabled) {
       document.documentElement.addEventListener(screenfull.raw.fullscreenchange, () => {
-        if (!screenfull.isFullscreen) toolbox.showEditButton();
+        if (screenfull.isFullscreen) return;
+        toolbox.unsetEditing();
+        graffitiWall.unsetEditMode();
       });
     }
 
