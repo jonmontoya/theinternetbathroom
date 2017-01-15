@@ -3,6 +3,7 @@ const ColorPicker = require('./colorPicker');
 const EventEmitter = require('events');
 
 function detectMobile() {
+  if (window.navigator.standalone) return false;
   if (window.innerWidth <= 800 || window.innerHeight <= 800) return true;
   return false;
 }
