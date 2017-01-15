@@ -59,13 +59,19 @@ setBackgroundImage(backgroundImageEl, galaxyImgUrl)
 
     toolbox.on('color', color => graffitiWall.setColor(color));
     toolbox.on('fullscreen', (request) => {
-      if (request) return screenfull.request();
-      return screenfull.exit();
+      if (!screenfull.enabled) return;
+      if (request) {
+        screenfull.request();
+      } else {
+        screenfull.exit();
+      }
     });
 
-    document.documentElement.addEventListener(screenfull.raw.fullscreenchange, () => {
-      if (!screenfull.isFullscreen) toolbox.showEditButton();
-    });
+    if (screenfull.enabled) {
+      document.documentElement.addEventListener(screenfull.raw.fullscreenchange, () => {
+        if (!screenfull.isFullscreen) toolbox.showEditButton();
+      });
+    }
 
     displayApp.style.transform = `scale(${scale})`;
     graffitiWall.setScale(scale);
