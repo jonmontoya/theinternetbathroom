@@ -35,6 +35,7 @@ I have a few things left to do, yet:
 
 - [ ] Update ReadMe
   - [ ] Cairo install for Linux
+- [ ] Restart server on server src change. (gulp?)
 - [ ] Re-add redis socket.io adapter for scalability.
 - [ ] Auto create and deploy S3 bucket through EB configs.
 - [ ] Add meta tags for social sharing.

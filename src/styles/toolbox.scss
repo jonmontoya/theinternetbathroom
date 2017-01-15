@@ -1,0 +1,30 @@
+.graffiti_toolbox {
+  background-color: #00ff00;
+  padding: 1px;
+  left: 15px;
+  position: absolute;
+  top: 15px;
+  z-index: 1;
+
+  .hide {
+    display: none;
+  }
+}
+
+.graffiti_button {
+  background-size: cover;
+  background-color: transparent;
+  border: none;
+  height: 24px;
+  margin: 1px;
+  overflow: hidden;
+  width: 24px;
+
+  &.exit {
+    background-image: url("../img/exit.png");
+  }
+
+  &.expand {
+    background-image: url("../img/expand.png");
+  }
+}
