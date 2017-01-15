@@ -40,21 +40,7 @@ function getWallScale(imgWidth, imgHeight) {
   return (clientHeight / imgHeight).toFixed(2);
 }
 
-if (!displayApp.requestFullScreen) {
-  displayApp.requestFullScreen =
-    displayApp.webkitRequestFullScreen ||
-    displayApp.mozRequestFullScreen ||
-    displayApp.msRequestFullScreen;
-}
-
 const scale = getWallScale(wallWidth, wallHeight);
-
-if (!displayApp.requestFullScreen) {
-  displayApp.requestFullScreen =
-    displayApp.webkitRequestFullScreen ||
-    displayApp.mozRequestFullScreen ||
-    displayApp.msRequestFullScreen;
-}
 
 setBackgroundImage(backgroundImageEl, galaxyImgUrl)
   .then(() => {
@@ -75,6 +61,10 @@ setBackgroundImage(backgroundImageEl, galaxyImgUrl)
     toolbox.on('fullscreen', (request) => {
       if (request) return screenfull.request();
       return screenfull.exit();
+    });
+
+    document.documentElement.addEventListener(screenfull.raw.fullscreenchange, () => {
+      if (!screenfull.isFullscreen) toolbox.showEditButton();
     });
 
     displayApp.style.transform = `scale(${scale})`;

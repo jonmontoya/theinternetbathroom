@@ -20,11 +20,7 @@
   overflow: hidden;
   width: 24px;
 
-  &.exit {
-    background-image: url("../img/exit.png");
-  }
-
-  &.expand {
-    background-image: url("../img/expand.png");
+  &.edit {
+    background-image: url("../img/edit.png");
   }
 }
