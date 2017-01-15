@@ -136,6 +136,15 @@ module.exports = class GraffitiWall {
     ];
   }
 
+  doStroke(pos) {
+    const [x, y] = pos;
+    this.displayContext.lineTo(x, y);
+    this.displayContext.moveTo(x, y);
+    this.displayContext.stroke();
+
+    this.stroke.push(pos);
+  }
+
   handleMove(event) {
     event.preventDefault();
     const newPos = this.getPos(event);
@@ -144,11 +153,7 @@ module.exports = class GraffitiWall {
 
     if (prevX === newX && prevY === newY) return;
 
-    this.displayContext.lineTo(newX, newY);
-    this.displayContext.moveTo(newX, newY);
-    this.displayContext.stroke();
-
-    this.stroke.push(this.prevPos);
+    this.doStroke(newPos);
 
     this.prevPos = newPos;
   }
@@ -171,14 +176,19 @@ module.exports = class GraffitiWall {
     this.displayContext.beginPath();
     this.displayContext.moveTo(posX, posY);
 
+    this.stroke.push(pos);
+
     addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
   }
 
   handleUp(event) {
     event.preventDefault();
+
     removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
     this.displayContext.closePath();
     this.emitStroke();
+
+
     this.stroke = [];
     this.prevPos = null;
   }
