@@ -137,6 +137,7 @@ module.exports = class GraffitiWall {
   }
 
   handleMove(event) {
+    event.preventDefault();
     const newPos = this.getPos(event);
     const [newX, newY] = newPos;
     const [prevX, prevY] = this.prevPos;
@@ -160,6 +161,7 @@ module.exports = class GraffitiWall {
   }
 
   handleDown(event) {
+    event.preventDefault();
     const pos = this.getPos(event);
     const [posX, posY] = pos;
 
@@ -172,7 +174,8 @@ module.exports = class GraffitiWall {
     addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
   }
 
-  handleUp() {
+  handleUp(event) {
+    event.preventDefault();
     removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
     this.displayContext.closePath();
     this.emitStroke();
