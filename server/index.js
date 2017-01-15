@@ -29,7 +29,7 @@ server.register(require('./graffitiPlugin'), () => {
         </head>
         <body>
           <div id="app">
-            <div id="color_picker"></div>
+            <div id="toolbox"></div>
             <div id="app_scalable">
               <img id="app_background"></img>
               <div id="graffiti"></div>
