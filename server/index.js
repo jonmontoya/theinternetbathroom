@@ -28,6 +28,9 @@ server.register(require('./graffitiPlugin'), () => {
           <meta name="apple-mobile-web-app-capable" content="yes">
           <meta name="mobile-web-app-capable" content="yes">
           <meta name="apple-mobile-web-app-status-bar-style" content="black">
+          <meta property="og:title" content="The Internet Bathroom"/>
+          <meta property="og:url" content="http://theinternetbathroom.com"/>
+          <meta property="og:image" content="${assetPath}theinternetbathroom.png"/>
           <title>The Internet Bathroom</title>
         </head>
         <body>
