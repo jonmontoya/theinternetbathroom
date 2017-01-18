@@ -38,10 +38,9 @@ I have a few things left to do, yet:
 - [ ] Restart server on server src change. (gulp?)
 - [ ] Re-add redis socket.io adapter for scalability.
 - [ ] Auto create and deploy S3 bucket through EB configs.
-- [ ] Add meta tags for social sharing.
+- [x] Add meta tags for social sharing.
 - [ ] Add ico file.
-- [ ] Clear wall for fresh graffiti.
 - [ ] Fullscreen mode for mobile.
-- [ ] Meteor erase feature.
+- [x] Meteor erase feature.
 - [ ] Multiple brush sizes.
 - [ ] Modify elastic beanstalk to allow ws connections and not default to xhr polling.
