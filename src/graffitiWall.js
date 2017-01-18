@@ -133,6 +133,11 @@ module.exports = class GraffitiWall {
       this.graffitiCanvas.putImageDataArray(data);
       this.refreshDisplayCanvas();
     });
+
+    this.ws.on('drawMeteor', (meteor) => {
+      this.graffitiCanvas.drawMeteor(meteor);
+      this.refreshDisplayCanvas();
+    });
   }
 
 
