@@ -1,7 +1,3 @@
-/**
-TODO: maintain versioned image data snapshot for performance
-**/
-
 const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 const REDIS_PORT = 6379;
 const GRAFFITI_REDIS_KEY = 'graffiti_image_data';
@@ -11,6 +7,13 @@ const schema = require('./schema.js');
 const Canvas = require('canvas');
 const GraffitiCanvas = require('../src/utils/graffitiCanvas');
 const redis = require('redis').createClient;
+const compositeGraffitiImage = require('./compositeGraffitiImage');
+const updateMetaImage = require('./updateMetaImage');
+
+const { env } = require('../config');
+
+const metaImageUpdateFrequency = 60000;
+let updatedMetaImageDate = new Date();
 
 const {
   IMAGE_WIDTH: wallWidth,
@@ -72,6 +75,13 @@ exports.register = (server, options, next) => {
           setGraffitiData(redisClient, graffitiImageData);
 
           io.emit('stroke', data);
+
+          const date = new Date();
+          if (env === 'production' && date - updatedMetaImageDate > metaImageUpdateFrequency) {
+            updatedMetaImageDate = date;
+            compositeGraffitiImage(graffitiCanvas.canvas)
+              .then(updateMetaImage);
+          }
         });
 
         socket.on('close', () => {
