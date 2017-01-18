@@ -9,9 +9,14 @@ const GraffitiCanvas = require('../src/utils/graffitiCanvas');
 const redis = require('redis').createClient;
 const compositeGraffitiImage = require('./compositeGraffitiImage');
 const updateMetaImage = require('./updateMetaImage');
+const getMeteorStrike = require('./getMeteorStrike');
 
 const { env } = require('../config');
 
+// create meteor strike every 6 hours
+const meteorStrikeFrequency = 21600000;
+
+// update meta image every minute on new strokes
 const metaImageUpdateFrequency = 60000;
 let updatedMetaImageDate = new Date();
 
@@ -57,6 +62,17 @@ exports.register = (server, options, next) => {
 
       const canvas = new Canvas();
       const graffitiCanvas = new GraffitiCanvas(canvas, wallWidth, wallHeight, graffitiImageData);
+
+      setInterval(() => {
+        const meteor = getMeteorStrike(wallWidth, wallHeight);
+
+        if (!meteor) return;
+
+        graffitiCanvas.drawMeteor(meteor);
+        graffitiImageData = graffitiCanvas.getImageDataArray();
+        setGraffitiData(redisClient, graffitiImageData);
+        io.emit('drawMeteor', meteor);
+      }, meteorStrikeFrequency);
 
       io.on('connection', (socket) => {
         const socketAddress = socket.handshake.address;

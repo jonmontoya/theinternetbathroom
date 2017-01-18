@@ -18,6 +18,7 @@ module.exports = class GraffitiCanvas {
 
   drawStroke(data) {
     const { context } = this;
+    context.globalCompositeOperation = 'source-over';
     context.strokeStyle = data.color;
 
     context.beginPath();
@@ -28,6 +29,22 @@ module.exports = class GraffitiCanvas {
     });
 
     context.closePath();
+  }
+
+  drawMeteor({ x, y, radius }) {
+    const { context } = this;
+    context.save();
+    context.globalCompositeOperation = 'destination-out';
+    context.fillStyle = '#ffffff';
+    context.beginPath();
+    context.arc(x, y, radius, 0, 2 * Math.PI);
+    context.fill();
+    context.globalCompositeOperation = 'source-atop';
+    context.fillStyle = 'rgba(0,0,0,0.5)';
+    context.beginPath();
+    context.arc(x, y, radius * 1.1, 0, 2 * Math.PI);
+    context.fill();
+    context.restore();
   }
 
   getImageDataArray() {
