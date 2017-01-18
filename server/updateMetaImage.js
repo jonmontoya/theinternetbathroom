@@ -7,7 +7,7 @@ const resizeScale = 2;
 const localPath = path.join(__dirname, '../theinternetbathroom.png');
 
 function copyToS3() {
-  const cmd = spawn(path.join(__dirname, '../node_modules/.bin/s3-deploy'), [localPath, '--cwd', path.join(__dirname, '..'), '--bucket', process.env.THE_INTERNET_BATHROOM_APP_BUCKET]);
+  const cmd = spawn(path.join(__dirname, '../node_modules/.bin/s3-deploy'), [localPath, '--cache', '300', '--cwd', path.join(__dirname, '..'), '--bucket', process.env.THE_INTERNET_BATHROOM_APP_BUCKET]);
 
   cmd.stdout.on('data', (data) => {
     console.log(`Updating Meta Image: ${data}`);
