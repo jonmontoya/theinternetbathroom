@@ -6,11 +6,13 @@
   color: white;
   display: none;
   font-family: 'Roboto', sans-serif;
-  font-size: 5vw;
+  font-size: 4vw;
   height: 100vh;
+  left: 0;
   padding: 0 7vw;
   position: fixed;
   text-align: center;
+  top: 0;
   width: 100vw;
   z-index: 2;
 
@@ -23,8 +25,8 @@
     background-size: cover;
     border: white solid 2px;
     display: inline-block;
-    height: 5vw;
-    width: 5vw;
+    height: 4vw;
+    width: 4vw;
   }
 
   & .share_icon {
@@ -48,15 +50,11 @@
   background-color: transparent;
   border: white 1px solid;
   color: white;
+  font-size: 5vw;
   height: 6vw;
   line-height: 6vw;
   position: absolute;
   right: 20px;
   top: 20px;
   width: 6vw;
-
-  &::before {
-    content: "\2716";
-    font-size: 5vw;
-  }
 }
