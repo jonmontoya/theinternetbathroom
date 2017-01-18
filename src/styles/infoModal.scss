@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+.info_modal {
+  background-color: rgba(0,0,0,.7);
+  box-sizing: border-box;
+  color: white;
+  display: none;
+  font-family: 'Roboto', sans-serif;
+  font-size: 5vw;
+  height: 100vh;
+  padding: 0 7vw;
+  position: fixed;
+  text-align: center;
+  width: 100vw;
+  z-index: 2;
+
+  &.show {
+    display: block;
+  }
+
+  & .icon {
+    background-color: white;
+    background-size: cover;
+    border: white solid 2px;
+    display: inline-block;
+    height: 5vw;
+    width: 5vw;
+  }
+
+  & .share_icon {
+    background-image: url('../img/share.png');
+    border: none;
+  }
+
+  & .spray_icon {
+    background-image: url('../img/spray_paint.png');
+  }
+}
+
+.info_modal_content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+}
+
+.info_modal_close {
+  background-color: transparent;
+  border: white 1px solid;
+  color: white;
+  height: 6vw;
+  line-height: 6vw;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 6vw;
+
+  &::before {
+    content: "\2716";
+    font-size: 5vw;
+  }
+}

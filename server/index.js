@@ -44,6 +44,7 @@ server.register(require('./graffitiPlugin'), () => {
         </head>
         <body>
           <div id="app">
+            <div id="info_modal"></div>
             <div id="toolbox"></div>
             <div id="app_scalable">
               <img id="app_background"></img>

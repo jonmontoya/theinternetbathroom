@@ -8,6 +8,7 @@ const bathroomForegroundUrl = require('./img/bathroom_foreground.png');
 
 const setBackgroundImage = require('./setBackgroundImage');
 
+const InfoModal = require('./infoModal');
 const Toolbox = require('./toolbox');
 const GraffitiWall = require('./graffitiWall');
 
@@ -18,6 +19,7 @@ const {
   IMAGE_HEIGHT: wallHeight,
 } = require('./utils/constants');
 
+const infoModalEl = document.getElementById('info_modal');
 const graffitiEl = document.getElementById('graffiti');
 const toolboxEl = document.getElementById('toolbox');
 const displayApp = document.getElementById('app_scalable');
@@ -41,6 +43,8 @@ function getWallScale(imgWidth, imgHeight) {
 }
 
 const scale = getWallScale(wallWidth, wallHeight);
+
+const infoModal = new InfoModal(infoModalEl);
 
 setBackgroundImage(backgroundImageEl, galaxyImgUrl)
   .then(() => {
