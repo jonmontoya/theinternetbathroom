@@ -1,6 +1,7 @@
 const REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 const REDIS_PORT = 6379;
 const GRAFFITI_REDIS_KEY = 'graffiti_image_data';
+const LAST_METEOR_STRIKE_REDIS_KEY = 'last_meteor_strike';
 
 const { Validator } = require('jsonschema');
 const schema = require('./schema.js');
@@ -41,12 +42,27 @@ function setGraffitiData(client, data) {
   client.set(GRAFFITI_REDIS_KEY, data);
 }
 
+function getLastMeteorStrike(client) {
+  return new Promise((resolve, reject) => {
+    client.get(LAST_METEOR_STRIKE_REDIS_KEY, (err, reply) => {
+      if (err) reject(err);
+      const lastMeteorStrike = new Date(reply) || new Date();
+      resolve(lastMeteorStrike);
+    });
+  });
+}
+
+function setLastMeteorStrike(client, data) {
+  client.set(LAST_METEOR_STRIKE_REDIS_KEY, data);
+}
+
 exports.register = (server, options, next) => {
   console.info(`Socket Server Connected on ${server.info.uri}.`)
 
   const redisClient = redis(REDIS_PORT, REDIS_HOST);
 
   let io;
+  let graffitiImageData;
 
   try {
     io = require('socket.io')(server.listener);
@@ -58,12 +74,22 @@ exports.register = (server, options, next) => {
 
   getGraffitiData(redisClient)
     .then((imgDataArray) => {
-      let graffitiImageData = imgDataArray || '';
-
+      graffitiImageData = imgDataArray || '';
+      return getLastMeteorStrike(redisClient);
+    })
+    .then((lastMeteorStrike) => {
       const canvas = new Canvas();
       const graffitiCanvas = new GraffitiCanvas(canvas, wallWidth, wallHeight, graffitiImageData);
+      let nextMeteorStrike = new Date(lastMeteorStrike.getTime() + meteorStrikeFrequency);
 
       setInterval(() => {
+        const date = new Date();
+
+        if (date.getTime() < nextMeteorStrike.getTime()) return;
+
+        nextMeteorStrike = Date(nextMeteorStrike.getTime() + meteorStrikeFrequency);
+        setLastMeteorStrike(redisClient, date);
+
         const meteor = getMeteorStrike(wallWidth, wallHeight);
 
         if (!meteor) return;
@@ -72,7 +98,7 @@ exports.register = (server, options, next) => {
         graffitiImageData = graffitiCanvas.getImageDataArray();
         setGraffitiData(redisClient, graffitiImageData);
         io.emit('drawMeteor', meteor);
-      }, meteorStrikeFrequency);
+      }, 60000);
 
       io.on('connection', (socket) => {
         const socketAddress = socket.handshake.address;
@@ -93,7 +119,7 @@ exports.register = (server, options, next) => {
           io.emit('stroke', data);
 
           const date = new Date();
-          if (env === 'production' && date - updatedMetaImageDate > metaImageUpdateFrequency) {
+          if (env === 'production' && date.getTime() - updatedMetaImageDate > metaImageUpdateFrequency) {
             updatedMetaImageDate = date;
             compositeGraffitiImage(graffitiCanvas.canvas)
               .then(updateMetaImage);
