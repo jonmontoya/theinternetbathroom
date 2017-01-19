@@ -50,8 +50,8 @@ function setGraffitiData(client, data) {
 function getLastMeteorStrike(client) {
   return new Promise((resolve, reject) => {
     client.get(LAST_METEOR_STRIKE_REDIS_KEY, (err, reply) => {
-      if (err) reject(err);
-      const lastMeteorStrike = new Date(reply) || new Date();
+      if (err) reply(new Date());
+      const lastMeteorStrike = reply ? new Date(reply) : new Date();
       resolve(lastMeteorStrike);
     });
   });
