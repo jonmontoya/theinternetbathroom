@@ -6,7 +6,6 @@ module.exports = class InfoModal {
     this.el.className = 'info_modal show';
 
     this.closeEl = document.createElement('button');
-    this.closeEl.innerHTML = '&#10006;';
     this.closeEl.className = 'info_modal_close';
 
     this.closeEl.onclick = () => {
