@@ -24,4 +24,4 @@ module.exports = class InfoModal {
     `;
     this.el.appendChild(this.closeEl);
   }
-}
+};
