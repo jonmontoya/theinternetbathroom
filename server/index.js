@@ -31,6 +31,7 @@ server.register(require('./graffitiPlugin'), () => {
           <meta property="og:title" content="The Internet Bathroom"/>
           <meta property="og:url" content="http://theinternetbathroom.com"/>
           <meta property="og:image" content="${assetPath}theinternetbathroom.png"/>
+          <link rel="icon" href="${assetPath}favicon.ico">
           <title>The Internet Bathroom</title>
           <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
