@@ -40,7 +40,11 @@ function getGraffitiData(client) {
 }
 
 function setGraffitiData(client, data) {
-  client.set(GRAFFITI_REDIS_KEY, data);
+  return new Promise((resolve) => {
+    client.set(GRAFFITI_REDIS_KEY, data, () => {
+      resolve();
+    });
+  });
 }
 
 function getLastMeteorStrike(client) {
@@ -61,6 +65,8 @@ exports.register = (server, options, next) => {
   console.info(`Socket Server Connected on ${server.info.uri}.`)
 
   const redisClient = redis(REDIS_PORT, REDIS_HOST);
+  const subscribe = redis(REDIS_PORT, REDIS_HOST);
+  const publish = redis(REDIS_PORT, REDIS_HOST);
 
   let io;
   let graffitiImageData;
@@ -102,6 +108,19 @@ exports.register = (server, options, next) => {
         io.emit('drawMeteor', meteor);
       }, 60000);
 
+      subscribe.on('message', (channel, data) => {
+        if (channel !== 'stroke') return;
+        const stroke = JSON.parse(data);
+        io.emit('stroke', stroke);
+
+        getGraffitiData(redisClient)
+          .then((imgDataArray) => {
+            graffitiImageData = imgDataArray || '';
+          });
+      });
+
+      subscribe.subscribe('stroke');
+
       io.on('connection', (socket) => {
         const socketAddress = socket.handshake.address;
         console.info(`Graffiti Socket Connection Established from ${socketAddress}.`);
@@ -114,11 +133,9 @@ exports.register = (server, options, next) => {
           if (result.errors.length) return;
 
           graffitiCanvas.drawStroke(data);
-
           graffitiImageData = graffitiCanvas.getImageDataArray();
-          setGraffitiData(redisClient, graffitiImageData);
-
-          io.emit('stroke', data);
+          setGraffitiData(redisClient, graffitiImageData)
+            .then(() => publish.publish('stroke', JSON.stringify(data)));
 
           const date = new Date();
           if (env === 'production' && date.getTime() - updatedMetaImageDate > metaImageUpdateFrequency) {
