@@ -7,6 +7,7 @@ const { Validator } = require('jsonschema');
 const schema = require('./schema.js');
 const Canvas = require('canvas');
 const GraffitiCanvas = require('../src/utils/graffitiCanvas');
+const redisAdapter = require('socket.io-redis');
 const redis = require('redis').createClient;
 const compositeGraffitiImage = require('./compositeGraffitiImage');
 const updateMetaImage = require('./updateMetaImage');
@@ -66,6 +67,7 @@ exports.register = (server, options, next) => {
 
   try {
     io = require('socket.io')(server.listener);
+    io.adapter(redisAdapter({ host: REDIS_HOST, port: REDIS_PORT }));
     console.info(`Socket Redis Adapter Connected to ${REDIS_HOST}:${REDIS_PORT}`);
   } catch (err) {
     console.error('Socket Server Connection Error: ', err);
