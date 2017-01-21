@@ -1,4 +1,7 @@
 const { env, assetPath } = require('../config');
+const GraffitiWorker = require('./graffitiWorker');
+
+const graffitiWorker = new GraffitiWorker();
 
 const PORT = 8081;
 
