@@ -197,12 +197,14 @@ module.exports = class GraffitiWall {
     this.stroke.push(pos);
 
     addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
+    addEventListener(this.el, ['mouseleave', 'touchleave'], this.handleUp);
   }
 
   handleUp(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
 
     removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
+    removeEventListener(this.el, ['mouseleave', 'touchleave'], this.handleUp);
     this.displayContext.closePath();
     this.emitStroke();
 
