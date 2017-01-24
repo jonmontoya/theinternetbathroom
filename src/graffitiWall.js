@@ -1,5 +1,8 @@
 require('./styles/graffiti.scss');
 const GraffitiCanvas = require('./utils/graffitiCanvas');
+const {
+  LAST_COLOR_USED_STORAGE_KEY: lastColorUsedStorageKey,
+} = require('./utils/constants');
 
 function addEventListener(el, events, handler) {
   if (events instanceof Array) {
@@ -61,7 +64,7 @@ module.exports = class GraffitiWall {
     this.displayContext.lineWidth = 3;
     this.displayContext.imageSmoothingEnabled = false;
 
-    this.color = '#00FF00';
+    this.color = window.localStorage.getItem(lastColorUsedStorageKey) || '#00ff00';
     this.prevPos = null;
 
     // bind draw events
