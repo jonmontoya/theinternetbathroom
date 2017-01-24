@@ -17,6 +17,7 @@ const io = require('socket.io-client');
 const {
   IMAGE_WIDTH: wallWidth,
   IMAGE_HEIGHT: wallHeight,
+  LAST_VISIT_STORAGE_KEY: lastVisitStorageKey,
 } = require('./utils/constants');
 
 const infoModalEl = document.getElementById('info_modal');
@@ -44,7 +45,14 @@ function getWallScale(imgWidth, imgHeight) {
 
 const scale = getWallScale(wallWidth, wallHeight);
 
+// show infomodal on first visit
+const lastVisit = window.localStorage.getItem(lastVisitStorageKey);
 const infoModal = new InfoModal(infoModalEl);
+
+if (!lastVisit) {
+  infoModal.showInstructions();
+  window.localStorage.setItem(lastVisitStorageKey, new Date());
+}
 
 setBackgroundImage(backgroundImageEl, galaxyImgUrl)
   .then(() => {
@@ -77,7 +85,11 @@ setBackgroundImage(backgroundImageEl, galaxyImgUrl)
 
     if (screenfull.enabled) {
       document.documentElement.addEventListener(screenfull.raw.fullscreenchange, () => {
-        if (screenfull.isFullscreen) return;
+        if (screenfull.isFullscreen) {
+          infoModal.showEscTip();
+          return;
+        }
+
         toolbox.unsetEditing();
         graffitiWall.unsetEditMode();
       });

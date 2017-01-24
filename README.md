@@ -38,7 +38,6 @@ sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build
 I have a few things left to do, yet:
 - [ ] Add testing.
 - [ ] Cleanup UI.
-  - [ ] Add cookie to not display instruction screen after first read.
   - [ ] Add cookie to save last color picked.
   - [ ] Send data and remove event listener when mouse leaves canvas in draw state.
 - [ ] Re-request screen init if not received 5 secs after the first page load.
