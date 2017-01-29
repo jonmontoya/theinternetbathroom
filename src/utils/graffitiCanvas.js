@@ -1,60 +1,36 @@
+// http://jsperf.com/canvas-pixel-manipulation
+const imgArrayStructSize = 4;
+
 module.exports = class GraffitiCanvas {
-  constructor(canvas, width, height, imgDataArray) {
-    this.canvas = canvas;
+  constructor(width, height, imgDataArray) {
     this.width = width;
     this.height = height;
 
-    this.canvas.width = width;
-    this.canvas.height = height;
+    const arrayElements = width * height;
 
-    this.context = canvas.getContext('2d');
-
-    this.context.lineWidth = 3;
-
-    this.drawStroke = this.drawStroke.bind(this);
+    this.imgArray = new Uint32Array(arrayElements * imgArrayStructSize);
+    this.drawPixels = this.drawPixels.bind(this);
 
     if (imgDataArray && imgDataArray.length) this.putImageDataArray(imgDataArray);
   }
 
-  drawStroke(data) {
-    const { context } = this;
-    context.globalCompositeOperation = 'source-over';
-    context.strokeStyle = data.color;
-
-    context.beginPath();
-    data.stroke.forEach(([strokeX, strokeY]) => {
-      context.lineTo(strokeX, strokeY);
-      context.stroke();
-      context.moveTo(strokeX, strokeY);
-    });
-
-    context.closePath();
+  putPixel(x, y, rGBA) {
+    if (x >= this.width || x < 0 || y >= this.height || y < 0) return;
+    const pos = (x * imgArrayStructSize) + (y * this.width * imgArrayStructSize);
+    if (pos >= this.imgArray.length || pos <= 0) return;
+    this.imgArray.set(rGBA, pos);
   }
 
-  drawMeteor({ x, y, radius }) {
-    const { context } = this;
-    context.save();
-    context.globalCompositeOperation = 'destination-out';
-    context.fillStyle = '#ffffff';
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI);
-    context.fill();
-    context.globalCompositeOperation = 'source-atop';
-    context.fillStyle = 'rgba(0,0,0,0.5)';
-    context.beginPath();
-    context.arc(x, y, radius * 1.1, 0, 2 * Math.PI);
-    context.fill();
-    context.restore();
+  drawPixels(pixels) {
+    pixels.forEach(([x, y, rGBA]) => this.putPixel(x, y, rGBA));
   }
 
   getImageDataArray() {
-    const imgData = this.context.getImageData(0, 0, this.width, this.height);
-    return imgData.data.toString();
+    return this.imgArray.toString();
   }
 
   putImageDataArray(imgDataArray) {
-    const imageData = this.context.createImageData(this.width, this.height);
-    imageData.data.set(imgDataArray.split(','));
-    this.context.putImageData(imageData, 0, 0);
+    const imageData = imgDataArray.split(',');
+    this.imgArray.set(imageData);
   }
 };

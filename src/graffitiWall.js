@@ -1,7 +1,9 @@
 require('./styles/graffiti.scss');
 const GraffitiCanvas = require('./utils/graffitiCanvas');
+const hexToRgba = require('./utils/hexToRgba');
 const {
   LAST_COLOR_USED_STORAGE_KEY: lastColorUsedStorageKey,
+  pixelThrottle,
 } = require('./utils/constants');
 
 function addEventListener(el, events, handler) {
@@ -31,7 +33,8 @@ module.exports = class GraffitiWall {
     this.width = width;
     this.height = height;
 
-    this.stroke = [];
+    this.brushSize = 3;
+    this.pixels = [];
 
     this.ws = ws;
 
@@ -41,7 +44,7 @@ module.exports = class GraffitiWall {
     this.el.style.height = `${height}px`;
 
     // create graffiti elements
-    this.graffitiCanvas = new GraffitiCanvas(document.createElement('canvas'), width, height);
+    this.graffitiCanvas = new GraffitiCanvas(width, height);
     this.displayCanvas = document.createElement('canvas');
     this.foregroundEl = document.createElement('div');
 
@@ -61,7 +64,6 @@ module.exports = class GraffitiWall {
 
     // setup display canvas
     this.displayContext = this.displayCanvas.getContext('2d');
-    this.displayContext.lineWidth = 3;
     this.displayContext.imageSmoothingEnabled = false;
 
     this.color = window.localStorage.getItem(lastColorUsedStorageKey) || '#00ff00';
@@ -71,10 +73,13 @@ module.exports = class GraffitiWall {
     this.handleMove = this.handleMove.bind(this);
     this.handleUp = this.handleUp.bind(this);
     this.handleDown = this.handleDown.bind(this);
+    this.sendPixels = this.sendPixels.bind(this);
 
     this.setScale(scale);
 
     this.bindWS();
+
+    setInterval(this.sendPixels, 200);
   }
 
   setEditMode() {
@@ -91,7 +96,9 @@ module.exports = class GraffitiWall {
 
   refreshDisplayCanvas() {
     this.displayContext.clearRect(0, 0, this.displayCanvas.width, this.displayCanvas.height);
-    this.displayContext.drawImage(this.graffitiCanvas.canvas, 0, 0);
+    const imageData = new ImageData(this.width, this.height);
+    imageData.data.set(this.graffitiCanvas.imgArray);
+    this.displayContext.putImageData(imageData, 0, 0);
   }
 
   setColor(color) {
@@ -127,8 +134,8 @@ module.exports = class GraffitiWall {
   }
 
   bindWS() {
-    this.ws.on('stroke', (data) => {
-      this.graffitiCanvas.drawStroke(data);
+    this.ws.on('pixelData', (data) => {
+      this.graffitiCanvas.drawPixels(data);
       this.refreshDisplayCanvas();
     });
 
@@ -138,7 +145,7 @@ module.exports = class GraffitiWall {
     });
 
     this.ws.on('drawMeteor', (meteor) => {
-      this.graffitiCanvas.drawMeteor(meteor);
+      this.graffitiCanvas.drawPixels(meteor);
       this.refreshDisplayCanvas();
     });
   }
@@ -154,13 +161,28 @@ module.exports = class GraffitiWall {
     ];
   }
 
-  doStroke(pos) {
-    const [x, y] = pos;
-    this.displayContext.lineTo(x, y);
-    this.displayContext.moveTo(x, y);
-    this.displayContext.stroke();
+  queuePixels(pos) {
+    const [posX, posY] = pos;
+    const { brushSize } = this;
+    const adj = parseInt(brushSize / 2, 10);
 
-    this.stroke.push(pos);
+    let dupIndex;
+    for (let x = (posX - adj); x < posX + brushSize; x += 1) {
+      for (let y = (posY - adj); y < posY + brushSize; y += 1) {
+        dupIndex = this.pixels.findIndex(([findX, findY]) => x === findX && y === findY);
+        if (dupIndex === -1) this.pixels.push([x, y, hexToRgba(this.color)]);
+      }
+    }
+
+    this.displayContext.fillStyle = this.color;
+    this.pixels.forEach(([x, y]) => this.displayContext.fillRect(x, y, 1, 1));
+  }
+
+  sendPixels() {
+    if (!this.pixels.length) return;
+    const pixels = this.pixels.splice(0, pixelThrottle);
+
+    this.ws.emit('pixelData', pixels);
   }
 
   handleMove(event) {
@@ -171,30 +193,19 @@ module.exports = class GraffitiWall {
 
     if (prevX === newX && prevY === newY) return;
 
-    this.doStroke(newPos);
+    this.queuePixels(newPos);
 
     this.prevPos = newPos;
   }
 
-  emitStroke() {
-    this.ws.emit('stroke', {
-      color: this.color,
-      stroke: this.stroke,
-    });
-  }
 
   handleDown(event) {
     event.preventDefault();
     const pos = this.getPos(event);
-    const [posX, posY] = pos;
 
     this.prevPos = pos;
 
-    this.displayContext.strokeStyle = this.color;
-    this.displayContext.beginPath();
-    this.displayContext.moveTo(posX, posY);
-
-    this.stroke.push(pos);
+    this.queuePixels(pos);
 
     addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
     addEventListener(this.el, ['mouseleave', 'touchleave'], this.handleUp);
@@ -205,11 +216,7 @@ module.exports = class GraffitiWall {
 
     removeEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
     removeEventListener(this.el, ['mouseleave', 'touchleave'], this.handleUp);
-    this.displayContext.closePath();
-    this.emitStroke();
 
-
-    this.stroke = [];
     this.prevPos = null;
   }
 };

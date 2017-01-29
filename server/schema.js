@@ -1,28 +1,20 @@
 module.exports = {
-  handshakeSchema: {
-    id: '/Handshake',
-    type: 'object',
-    properties: {
-      location: { type: 'string' },
-    },
-    required: ['location'],
-  },
-  strokeSchema: {
-    id: '/Stroke',
-    type: 'object',
+  pixelSchema: {
+    id: '/PixelData',
+    type: 'array',
     properties: {
       color: {
         type: 'string',
-        stroke: {
+      },
+      pixels: {
+        type: 'array',
+        minItems: 1,
+        maxItems: 1000,
+        items: {
           type: 'array',
-          minItems: 2,
-          maxItems: 1000,
-          items: {
-            type: 'array',
-            minItems: 2,
-            maxItems: 2,
-            items: { type: 'number' },
-          },
+          minItems: 3,
+          maxItems: 3,
+          items: [{ type: 'number' }, { type: 'number' }, { type: 'array' }],
         },
       },
       required: ['color', 'stroke'],
