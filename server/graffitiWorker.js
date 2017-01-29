@@ -56,7 +56,10 @@ module.exports = class GraffitiWorker {
       .then((imgDataArray) => {
         const graffitiImageData = imgDataArray || '';
         const canvas = new Canvas();
-        const graffitiCanvas = new GraffitiCanvas(canvas, wallWidth, wallHeight, graffitiImageData);
+        canvas.width = wallWidth;
+        canvas.height = wallHeight;
+        const context = canvas.getContext('2d');
+        const graffitiCanvas = new GraffitiCanvas(wallWidth, wallHeight, graffitiImageData);
 
         subscribe.on('message', () => {
           redisClient.lpop(GRAFFITI_QUEUE_REDIS_KEY, (err, queueData) => {
@@ -70,10 +73,10 @@ module.exports = class GraffitiWorker {
             const json = JSON.parse(queueData);
             const { type, data } = json;
 
-            if (type === 'stroke') {
-              graffitiCanvas.drawStroke(data);
+            if (type === 'pixelData') {
+              graffitiCanvas.drawPixels(data);
             } else if (type === 'meteor') {
-              graffitiCanvas.drawMeteor(data);
+              graffitiCanvas.drawPixels(data);
             }
 
             setGraffitiData(redisClient, graffitiCanvas.getImageDataArray());
@@ -81,7 +84,11 @@ module.exports = class GraffitiWorker {
             const date = new Date();
             if (env === 'production' && date.getTime() - updatedMetaImageDate > metaImageUpdateFrequency) {
               updatedMetaImageDate = date;
-              compositeGraffitiImage(graffitiCanvas.canvas)
+              const imageData = context.createImageData(canvas.width, canvas.height);
+              imageData.data.set(graffitiCanvas.imgArray);
+              context.putImageData(imageData, 0, 0);
+
+              compositeGraffitiImage(canvas)
                 .then(updateMetaImage);
             }
           });

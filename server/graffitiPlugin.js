@@ -6,7 +6,6 @@ const LAST_METEOR_STRIKE_REDIS_KEY = 'last_meteor_strike';
 
 const { Validator } = require('jsonschema');
 const schema = require('./schema.js');
-const Canvas = require('canvas');
 const GraffitiCanvas = require('../src/utils/graffitiCanvas');
 const redisAdapter = require('socket.io-redis');
 const redis = require('redis').createClient;
@@ -47,7 +46,7 @@ function setLastMeteorStrike(client, data) {
 }
 
 exports.register = (server, options, next) => {
-  console.info(`Socket Server Connected on ${server.info.uri}.`)
+  console.info(`Socket Server Connected on ${server.info.uri}.`);
 
   const redisClient = redis(REDIS_PORT, REDIS_HOST);
   const subscribe = redis(REDIS_PORT, REDIS_HOST);
@@ -71,16 +70,17 @@ exports.register = (server, options, next) => {
       return getLastMeteorStrike(redisClient);
     })
     .then((lastMeteorStrike) => {
-      const canvas = new Canvas();
-      const graffitiCanvas = new GraffitiCanvas(canvas, wallWidth, wallHeight, graffitiImageData);
+      const graffitiCanvas = new GraffitiCanvas(wallWidth, wallHeight, graffitiImageData);
       let nextMeteorStrike = new Date(lastMeteorStrike.getTime() + meteorStrikeFrequency);
 
       setInterval(() => {
         const date = new Date();
+        const nextMeteorStrikeTime = nextMeteorStrike.getTime();
 
-        if (date.getTime() < nextMeteorStrike.getTime()) return;
+        if (date.getTime() < nextMeteorStrikeTime) return;
 
-        nextMeteorStrike = Date(nextMeteorStrike.getTime() + meteorStrikeFrequency);
+        nextMeteorStrike = new Date(nextMeteorStrikeTime + meteorStrikeFrequency);
+
         setLastMeteorStrike(redisClient, date);
 
         const data = getMeteorStrike(wallWidth, wallHeight);
@@ -98,11 +98,11 @@ exports.register = (server, options, next) => {
       subscribe.on('message', (channel, message) => {
         const json = JSON.parse(message);
         const { type, data } = json;
-        if (type === 'stroke') {
-          graffitiCanvas.drawStroke(data);
-          io.emit('stroke', data);
+        if (type === 'pixelData') {
+          graffitiCanvas.drawPixels(data);
+          io.emit('pixelData', data);
         } else if (type === 'meteor') {
-          graffitiCanvas.drawMeteor(data);
+          graffitiCanvas.drawPixels(data);
           io.emit('drawMeteor', data);
         }
       });
@@ -115,12 +115,12 @@ exports.register = (server, options, next) => {
 
         socket.emit('initData', graffitiCanvas.getImageDataArray());
 
-        socket.on('stroke', (data) => {
-          const result = validator.validate(data, schema.strokeSchema);
+        socket.on('pixelData', (data) => {
+          const result = validator.validate(data, schema.pixelSchema);
 
           if (result.errors.length) return;
 
-          const canvasEvent = JSON.stringify({ type: 'stroke', data });
+          const canvasEvent = JSON.stringify({ type: 'pixelData', data });
 
           publish.publish('canvasEvent', canvasEvent);
 

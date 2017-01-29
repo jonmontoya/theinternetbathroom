@@ -36,7 +36,7 @@ sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build
 ## Todo
 
 I have a few things left to do, yet:
-- [ ] Add testing.
+- [ ] Add more tests.
 - [ ] Re-request screen init if not received 5 secs after the first page load.
 - [ ] Restart server on server src change. (gulp?)
 - [ ] Auto create and deploy S3 bucket through EB configs.
