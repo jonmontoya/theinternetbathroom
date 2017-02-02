@@ -1,5 +1,7 @@
 require('./styles/graffiti.scss');
 const GraffitiCanvas = require('./utils/graffitiCanvas');
+const interpolateCoords = require('./utils/interpolateCoords');
+
 const hexToRgba = require('./utils/hexToRgba');
 const {
   LAST_COLOR_USED_STORAGE_KEY: lastColorUsedStorageKey,
@@ -161,19 +163,21 @@ module.exports = class GraffitiWall {
     ];
   }
 
-  queuePixels(pos) {
-    const [posX, posY] = pos;
+  drawBrush([posX, posY]) {
     const { brushSize } = this;
     const adj = parseInt(brushSize / 2, 10);
-
     let dupIndex;
+
     for (let x = (posX - adj); x < posX + brushSize; x += 1) {
       for (let y = (posY - adj); y < posY + brushSize; y += 1) {
         dupIndex = this.pixels.findIndex(([findX, findY]) => x === findX && y === findY);
         if (dupIndex === -1) this.pixels.push([x, y, hexToRgba(this.color)]);
       }
     }
+  }
 
+  queuePixels(segment) {
+    segment.forEach(pos => this.drawBrush(pos));
     this.displayContext.fillStyle = this.color;
     this.pixels.forEach(([x, y]) => this.displayContext.fillRect(x, y, 1, 1));
   }
@@ -193,7 +197,8 @@ module.exports = class GraffitiWall {
 
     if (prevX === newX && prevY === newY) return;
 
-    this.queuePixels(newPos);
+    const segment = interpolateCoords(this.prevPos, newPos);
+    this.queuePixels(segment);
 
     this.prevPos = newPos;
   }
@@ -205,7 +210,8 @@ module.exports = class GraffitiWall {
 
     this.prevPos = pos;
 
-    this.queuePixels(pos);
+    const segment = interpolateCoords(pos, pos);
+    this.queuePixels(segment);
 
     addEventListener(this.el, ['mousemove', 'touchmove'], this.handleMove);
     addEventListener(this.el, ['mouseleave', 'touchleave'], this.handleUp);

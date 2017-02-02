@@ -17,7 +17,7 @@ module.exports = class GraffitiCanvas {
   putPixel(x, y, rGBA) {
     if (x >= this.width || x < 0 || y >= this.height || y < 0) return;
     const pos = (x * imgArrayStructSize) + (y * this.width * imgArrayStructSize);
-    if (pos >= this.imgArray.length || pos <= 0) return;
+    if (pos >= this.imgArray.length || pos < 0) return;
     this.imgArray.set(rGBA, pos);
   }
 
